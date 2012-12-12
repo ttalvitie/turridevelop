@@ -1,2 +1,4 @@
 /projekti/target/
 *~
+/dokumentointi/*.aux
+/dokumentointi/*.log
