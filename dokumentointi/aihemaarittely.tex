@@ -17,6 +17,14 @@ ohjelmoidaan piirtämällä tilakaavioita. Turing-koneisiin sallitaan myös
 laajennos, että koneen osana voidaan ajaa muita saman projektin (eli
 hakemiston) koneita.
 
+Tässä toteutettavissa Turing-koneissa aakkostona on Javan tukemat
+Unicode-merkit (char), syöte on nauhan alussa ja loput merkit ovat
+unicode-openbox-merkkejä (␣). Jokaisessa tilasiirtymässä luetaan jokin
+annetuista merkeistä, voidaan kirjoittaa tilalle jokin merkki ja liikutaan
+nauhalla vasemmalle, oikealle tai pysytään paikallaan. Ohjelman suoritus
+päättyy jos se saavuttaa hyväksyväksi merkityn tilan. Mikäli nauhan alussa
+yritetään liikkua vasemmalle, jää lukupää samaan kohtaan.
+
 \section*{Toiminnot}
 \begin{itemize}
 \item Projektin avaaminen, eli hakemiston valitseminen. Hakemistosta avataan
