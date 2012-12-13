@@ -1,6 +1,6 @@
 \documentclass[a4paper, 11pt, finnish]{article}
 \usepackage{ucs}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[finnish]{babel}
 
@@ -12,4 +12,36 @@
 
 \begin{document}
 \maketitle
+Ohjelma on kehitysympäristö Turing-koneille. Ohjelmassa Turing-koneita
+ohjelmoidaan piirtämällä tilakaavioita. Turing-koneisiin sallitaan myös
+laajennos, että koneen osana voidaan ajaa muita saman projektin (eli
+hakemiston) koneita.
+
+\section*{Toiminnot}
+\begin{itemize}
+\item Projektin avaaminen, eli hakemiston valitseminen. Hakemistosta avataan
+tällöin kaikki hakemiston konetiedostot jotka on tallennettu yksinkertaiseen
+JSON-formaattiin.
+\item Konetiedoston tallentaminen.
+\item Uuden koneen luominen projektiin.
+\item Kaikkien projektin konetiedostojen tallentaminen samaan aikaan.
+\item Turing-koneen simuloiminen. Käyttäjä voi valita alkutilan joko suoraan
+koneiden tiloista tai listasta alkutiloiksi merkittyjä tiloja.
+Käyttäjä antaa koneen syötteen joko tiedostosta tai tekstikentästä ja voi
+kontrolloida suoritusta joko steppaamalla seuraavaan tilaan, seuraavaan
+breakpointtiin tai ajamalla ohjelman läpi. Nauhan tilaa näytetään reaaliajassa.
+\item Tilan lisääminen koneeseen.
+\item Tilan tietojen muuttaminen. Tilalla voi olla nimi, se voidaan merkitä
+hyväksyväksi tilaksi, liitostilaksi (tila näkyy kutsuvaan koneeseen) ja
+breakpointiksi. Mikäli tilalla ei ole nimeä, sille annetaan siinä koneessa
+minimaalinen uniikki numerotunnus. Tilalle ei voi antaa nimeä joka on jo toisen
+tilan käytössä.
+\item Tilan poistaminen koneesta. Samalla poistetaan tilaan liittyvät
+tilasiirtymät.
+\item Alikoneen lisääminen koneeseen. Lisäämisen yhteydessä valitaan projektin
+muista koneista, mihin koneeseen alikone viittaa. Alikoneen yhteydessä näkyvät
+sen liitostilat, joihin voidaan vetää yhteyksiä kuten tavallisiinkin tiloihin.
+\item Alikoneen poistaminen. Poiston yhteydessä katoavat myös yhteydet
+liitostiloihin.
+\end{itemize}
 \end{document}
