@@ -1,5 +1,7 @@
 package fi.helsinki.cs.turridevelop.logiikka;
 
+import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+
 /**
  * State of a Turing machine.
  */
@@ -31,13 +33,15 @@ public class State {
     /**
      * Sets the name of the state.
      * 
-     * Automatically calls onStateNameChange of the StateNameStorage.
-     * 
      * @param name New name of the state.
+     * @throws NameInUseException if the name is already in use.
      */
-    public void setName(String name) {
-        String oldname = name;
+    public void setName(String name) throws NameInUseException {
+        String oldname = this.name;
         this.name = name;
-        name_storage.onStateNameChange(oldname);
+        if(!name_storage.onStateNameChange(oldname)) {
+            this.name = oldname;
+            throw new NameInUseException();
+        }
     }
 }

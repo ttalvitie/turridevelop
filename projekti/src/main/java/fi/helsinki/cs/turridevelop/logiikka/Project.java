@@ -1,5 +1,6 @@
 package fi.helsinki.cs.turridevelop.logiikka;
 
+import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import java.util.HashMap;
 
 /**
@@ -8,13 +9,43 @@ import java.util.HashMap;
 public class Project implements MachineNameStorage {
     private HashMap<String, Machine> machines;
     
+    /**
+     * Constructs empty Project.
+     */
     public Project() {
         machines = new HashMap<String, Machine>();
     }
     
-    public void onMachineNameChange(String oldname) {
+    /**
+     * Gets machine by name.
+     * 
+     * @param name Name of the machine.
+     * @return The machine or null if not found.
+     */
+    Machine getMachine(String name) {
+        return machines.get(name);
+    }
+    
+    /**
+     * Adds a machine to the project.
+     * 
+     * @param name Name of the new machine.
+     * @throws NameInUseException if the name is already in use.
+     */
+    void addMachine(String name) throws NameInUseException {
+        if(machines.containsKey(name)) {
+            throw new NameInUseException();
+        }
+        machines.put(name, new Machine(name, this));
+    }
+    
+    public boolean onMachineNameChange(String oldname) {
         Machine machine = machines.get(oldname);
+        if(machines.containsKey(machine.getName())) {
+            return false;
+        }
         machines.remove(oldname);
         machines.put(machine.getName(), machine);
+        return true;
     }
 }

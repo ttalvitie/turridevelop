@@ -1,5 +1,6 @@
 package fi.helsinki.cs.turridevelop.logiikka;
 
+import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import java.util.HashMap;
 
 /**
@@ -35,14 +36,16 @@ public class Machine implements StateNameStorage {
     /**
      * Sets the name of the machine.
      * 
-     * Automatically calls onMachineNameChange of the MachineNameStorage.
-     * 
      * @param name 
+     * @throws NameInUseException if the name is already in use.
      */
-    public void setName(String name) {
-        String oldname = name;
+    public void setName(String name) throws NameInUseException {
+        String oldname = this.name;
         this.name = name;
-        name_storage.onMachineNameChange(oldname);
+        if(!name_storage.onMachineNameChange(oldname)) {
+            this.name = oldname;
+            throw new NameInUseException();
+        }
     }
     
     /**
@@ -51,13 +54,30 @@ public class Machine implements StateNameStorage {
      * @param name The name of the state.
      * @return The state or null if not found.
      */
-    State getState(String name) {
+    public State getState(String name) {
         return states.get(name);
     }
+    
+    /**
+     * Adds a state to the machine.
+     * 
+     * @param name The name of the state.
+     * @throws NameInUseException if the name is already in use.
+     */
+    public void addState(String name) throws NameInUseException {
+        if(states.containsKey(name)) {
+            throw new NameInUseException();
+        }
+        states.put(name, new State(name, this));
+    }
 
-    public void onStateNameChange(String oldname) {
+    public boolean onStateNameChange(String oldname) {
         State state = states.get(oldname);
+        if(states.containsKey(state.getName())) {
+            return false;
+        }
         states.remove(oldname);
         states.put(state.getName(), state);
+        return true;
     }
 }
