@@ -69,4 +69,28 @@ public class StateTest {
         assertEquals(null, state.getTransitionByInput('b'));
         assertEquals(null, state.getTransitionByInput('c'));
     }
-}
+    
+    @Test(expected=NameInUseException.class)
+    public void testAddTransitionClashDetectionWorks() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        Transition t2 = new Transition(state2, "bc");
+        state.addTransition(t);
+        state.addTransition(t2);
+    }
+    
+    @Test
+    public void testAddTransitionClashDetectionChangesNothing() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        Transition t2 = new Transition(state2, "bc");
+        state.addTransition(t);
+        try {
+            state.addTransition(t2);
+        } catch(NameInUseException e) { }
+        
+        assertEquals(1, state.getTransitions().size());
+        assertTrue(state.getTransitions().contains(t));
+        assertEquals(t, state.getTransitionByInput('a'));
+        assertEquals(t, state.getTransitionByInput('b'));
+        assertEquals(null, state.getTransitionByInput('c'));
+    }
+ }
