@@ -1,6 +1,8 @@
 package fi.helsinki.cs.turridevelop.logiikka;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * State of a Turing machine.
@@ -16,9 +18,28 @@ public class State {
      */
     private StateNameStorage name_storage;
     
+    /**
+     * Transitions from this state.
+     */
+    private HashSet<Transition> transitions;
+    
+    /**
+     * Hashmap from input characters to transitions that accept the character.
+     */
+    private HashMap<Character, Transition> transitions_by_input;
+    
+    /**
+     * Constructs a Turing machine state.
+     * 
+     * @param name The name of the state.
+     * @param name_storage Object for which onStateNameChange is called with
+     * the old name of the State after the name has changed. 
+     */
     public State(String name, StateNameStorage name_storage) {
         this.name = name;
         this.name_storage = name_storage;
+        transitions = new HashSet<Transition>();
+        transitions_by_input = new HashMap<Character, Transition>();
     }
     
     /**
@@ -43,5 +64,25 @@ public class State {
             this.name = oldname;
             throw new NameInUseException();
         }
+    }
+    
+    /**
+     * Add transition from the state.
+     * 
+     * @param transition The transition to be added.
+     * @throws NameInUseException if some transition already has same input
+     * character as transition.
+     */
+    public void addTransition(Transition transition) throws NameInUseException {
+        String inputchars = transition.getInputCharacters();
+        for(int i = 0; i < inputchars.length(); i++) {
+            char c = inputchars.charAt(i);
+            if(transitions_by_input.containsKey(c)) {
+                throw new NameInUseException(
+                    "State already has transition for character \"" + c + "\""
+                );
+            }
+        }
+        transitions.add(transition);
     }
 }

@@ -43,7 +43,7 @@ public class MachineTest {
     }
     
     @Test
-    public void setNameWorks() throws NameInUseException {
+    public void testSetNameWorks() throws NameInUseException {
         mac.setName("linux");
         assertEquals("linux", mac.getName());
     }
