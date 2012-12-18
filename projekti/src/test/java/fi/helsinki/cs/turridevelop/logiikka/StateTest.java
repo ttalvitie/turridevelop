@@ -93,4 +93,25 @@ public class StateTest {
         assertEquals(t, state.getTransitionByInput('b'));
         assertEquals(null, state.getTransitionByInput('c'));
     }
+    
+    @Test
+    public void testMultipleAddTransitionWorks() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        state.addTransition(t);
+        state.addTransition(t);
+        assertEquals(1, state.getTransitions().size());
+        assertTrue(state.getTransitions().contains(t));
+    }
+    
+    @Test
+    public void testMultipleRemoveTransitionWorks() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        state.addTransition(t);
+        state.removeTransition(t);
+        state.removeTransition(t);
+        assertEquals(0, state.getTransitions().size());
+        assertEquals(null, state.getTransitionByInput('a'));
+        assertEquals(null, state.getTransitionByInput('b'));
+        assertEquals(null, state.getTransitionByInput('c'));
+   }
  }
