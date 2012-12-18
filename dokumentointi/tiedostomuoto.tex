@@ -1,0 +1,56 @@
+\documentclass[a4paper, 11pt, finnish]{article}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[finnish]{babel}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\author{Topi Talvitie}
+\title{turrIDEvelop: Tiedostomuoto}
+
+\begin{document}
+\maketitle
+
+Yksittäinen Turingin kone tallennetaan seuraavaa muotoa noudattavaan
+JSON-tiedostoon:
+
+\textbf{Turingin kone}, juuriolio:
+\begin{itemize}
+\item states : mappi tilojen nimiltä \textbf{tiloille}
+\item submachines : mappi alikoneiden nimiltä \textbf{alikoneille}
+\end{itemize}
+
+\textbf{Tila}, olio:
+\begin{itemize}
+\item transitions : taulukko \textbf{tilasiirtymiä}
+\item accepting : onko tila hyväksyvä
+\item joint : onko tila liitostila, ts. näkyy konetta alikoneinaan käyttäviin
+koneisiin
+\item start : onko tila alkutila
+\item x : x-koordinaatti esityksessä kaaviona
+\item y : y-koordinaatti esityksessä kaaviona
+\end{itemize}
+
+\textbf{Tilasiirtymä}, olio:
+\begin{itemize}
+\item destination : kohdetila
+\item inchar : merkit joista tilasiirtymä voi lukea yhden.
+\item outchar : merkki jonka tilasiirtymä kirjoittaa, jos tyhjä niin ei
+kirjoita mitään.
+\item move : siirtymä kirjoittamisen jälkeen, ''L'' = vasemmalle, ''R'' =
+oikealle, ''S'' = pysy paikallaan (''Stay'').
+\end{itemize}
+
+\textbf{Alikone}, olio:
+\begin{itemize}
+\item machine : alikone jota kutsutaan (jos arvo ''nimi'' niin koneen
+tiedostonnimi ''nimi.turr'')
+\item statemapping : mappi tämän koneen tilojen nimiltä alikoneena käytettävän
+koneen liitostilojen nimille, kertoo mihin alikoneen tilaan tila samastetaan
+\item x : x-koordinaatti esityksessä kaaviona
+\item y : y-koordinaatti esityksessä kaaviona
+\end{itemize}
+
+\end{document}
