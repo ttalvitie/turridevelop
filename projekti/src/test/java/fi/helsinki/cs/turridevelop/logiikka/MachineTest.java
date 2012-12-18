@@ -42,6 +42,12 @@ public class MachineTest {
     public void tearDown() {
     }
     
+    @Test
+    public void setNameWorks() throws NameInUseException {
+        mac.setName("linux");
+        assertEquals("linux", mac.getName());
+    }
+    
     @Test(expected=NameInUseException.class)
     public void testDetectsNameClashWhenAdding() throws NameInUseException {
         mac.addState("asd");
