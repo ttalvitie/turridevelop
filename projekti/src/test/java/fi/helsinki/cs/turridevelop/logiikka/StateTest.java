@@ -12,6 +12,7 @@ public class StateTest {
     Project proj;
     Machine mac;
     State state;
+    State state2;
     
     public StateTest() {
     }
@@ -27,10 +28,9 @@ public class StateTest {
     @Before
     public void setUp() throws NameInUseException {
         proj = new Project();
-        proj.addMachine("mac");
-        mac = proj.getMachine("mac");
-        mac.addState("state");
-        state = mac.getState("state");
+        mac = proj.addMachine("mac");
+        state = mac.addState("state");
+        state2 = mac.addState("state2");
     }
     
     @After
@@ -41,5 +41,32 @@ public class StateTest {
     public void testSetNameWorks() throws NameInUseException {
         state.setName("asd");
         assertEquals("asd", state.getName());
+    }
+    
+    @Test
+    public void testAddTransitionWorks() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        state.addTransition(t);
+        assertEquals(1, state.getTransitions().size());
+        assertTrue(state.getTransitions().contains(t));
+    }
+    
+    @Test
+    public void testAddTransitionAddsByInput() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        state.addTransition(t);
+        assertEquals(t, state.getTransitionByInput('a'));
+        assertEquals(t, state.getTransitionByInput('b'));
+        assertEquals(null, state.getTransitionByInput('c'));
+    }
+    
+    @Test
+    public void testRemoveTransitionRemovesByInput() throws NameInUseException {
+        Transition t = new Transition(state2, "ab");
+        state.addTransition(t);
+        state.removeTransition(t);
+        assertEquals(null, state.getTransitionByInput('a'));
+        assertEquals(null, state.getTransitionByInput('b'));
+        assertEquals(null, state.getTransitionByInput('c'));
     }
 }

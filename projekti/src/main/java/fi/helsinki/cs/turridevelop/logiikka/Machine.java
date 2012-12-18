@@ -63,12 +63,15 @@ public class Machine implements StateNameStorage {
      * 
      * @param name The name of the state.
      * @throws NameInUseException if the name is already in use.
+     * @return The added state.
      */
-    public void addState(String name) throws NameInUseException {
+    public State addState(String name) throws NameInUseException {
         if(states.containsKey(name)) {
             throw new NameInUseException();
         }
-        states.put(name, new State(name, this));
+        State state = new State(name, this);
+        states.put(name, state);
+        return state;
     }
 
     public boolean onStateNameChange(String oldname) {

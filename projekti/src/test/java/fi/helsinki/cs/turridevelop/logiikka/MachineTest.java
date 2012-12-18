@@ -34,8 +34,7 @@ public class MachineTest {
     @Before
     public void setUp() throws NameInUseException {
         proj = new Project();
-        proj.addMachine("mac");
-        mac = proj.getMachine("mac");
+        mac = proj.addMachine("mac");
     }
     
     @After

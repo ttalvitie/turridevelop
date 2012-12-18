@@ -31,12 +31,15 @@ public class Project implements MachineNameStorage {
      * 
      * @param name Name of the new machine.
      * @throws NameInUseException if the name is already in use.
+     * @return The created machine.
      */
-    void addMachine(String name) throws NameInUseException {
+    Machine addMachine(String name) throws NameInUseException {
         if(machines.containsKey(name)) {
             throw new NameInUseException();
         }
-        machines.put(name, new Machine(name, this));
+        Machine machine = new Machine(name, this);
+        machines.put(name, machine);
+        return machine;
     }
     
     public boolean onMachineNameChange(String oldname) {
