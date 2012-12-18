@@ -37,7 +37,7 @@ public class State {
      * @throws NameInUseException if the name is already in use.
      */
     public void setName(String name) throws NameInUseException {
-        String oldname = this.name;
+        String oldname = name; // this.name;
         this.name = name;
         if(!name_storage.onStateNameChange(oldname)) {
             this.name = oldname;
