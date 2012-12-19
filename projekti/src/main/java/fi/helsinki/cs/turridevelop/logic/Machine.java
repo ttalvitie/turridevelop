@@ -74,6 +74,7 @@ public class Machine implements StateNameStorage {
         return state;
     }
 
+    @Override
     public boolean onStateNameChange(String oldname) {
         State state = states.get(oldname);
         if(states.containsKey(state.getName())) {

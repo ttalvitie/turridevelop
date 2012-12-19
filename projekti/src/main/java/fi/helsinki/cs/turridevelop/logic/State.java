@@ -29,7 +29,14 @@ public class State {
     private HashMap<Character, Transition> transitions_by_input;
     
     /**
+     * Is the state accepting?
+     */
+    private boolean accepting;
+    
+    /**
      * Constructs a Turing machine state.
+     * 
+     * The state is set to non-accepting initially.
      * 
      * @param name The name of the state.
      * @param name_storage Object for which onStateNameChange is called with
@@ -40,6 +47,26 @@ public class State {
         this.name_storage = name_storage;
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
+        accepting = false;
+    }
+    
+    /**
+     * Tests whether the state is accepting.
+     * 
+     * @return true if accepting, false otherwise.
+     */
+    public boolean isAccepting() {
+        return accepting;
+    }
+    
+    /**
+     * Sets the state accepting/non-accepting.
+     * 
+     * @param accepting true if the state should be set to accepting, false if
+     * it should be set to non-accepting.
+     */
+    public void setAccepting(boolean accepting) {
+        this.accepting = accepting;
     }
     
     /**

@@ -42,6 +42,7 @@ public class Project implements MachineNameStorage {
         return machine;
     }
     
+    @Override
     public boolean onMachineNameChange(String oldname) {
         Machine machine = machines.get(oldname);
         if(machines.containsKey(machine.getName())) {
