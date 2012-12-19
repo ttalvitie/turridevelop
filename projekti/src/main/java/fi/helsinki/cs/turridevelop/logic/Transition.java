@@ -1,4 +1,4 @@
-package fi.helsinki.cs.turridevelop.logiikka;
+package fi.helsinki.cs.turridevelop.logic;
 
 /**
  * State transition that reads any of given input characters from the tape,

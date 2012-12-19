@@ -1,4 +1,4 @@
-package fi.helsinki.cs.turridevelop.logiikka;
+package fi.helsinki.cs.turridevelop.logic;
 
 /**
  * Observer for tracking changes of State names.

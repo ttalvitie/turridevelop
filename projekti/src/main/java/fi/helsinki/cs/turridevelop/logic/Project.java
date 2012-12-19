@@ -1,4 +1,4 @@
-package fi.helsinki.cs.turridevelop.logiikka;
+package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import java.util.HashMap;

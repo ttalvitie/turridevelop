@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fi.helsinki.cs.turridevelop.logiikka;
+package fi.helsinki.cs.turridevelop.logic;
 
+import fi.helsinki.cs.turridevelop.logic.Machine;
+import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 
 import org.junit.After;
