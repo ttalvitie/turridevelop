@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-class TestStateNameStorage implements StateNameStorage {
+class DummyStateNameStorage implements StateNameStorage {
     @Override
     public boolean onStateNameChange(String oldname) {
         return true;
@@ -17,7 +17,7 @@ class TestStateNameStorage implements StateNameStorage {
 }
 
 public class SimulationTest {
-    TestStateNameStorage test_obs;
+    DummyStateNameStorage dummy_obs;
     
     public SimulationTest() {
     }
@@ -32,7 +32,7 @@ public class SimulationTest {
     
     @Before
     public void setUp() {
-        test_obs = new TestStateNameStorage();
+        dummy_obs = new DummyStateNameStorage();
     }
     
     @After
@@ -41,8 +41,8 @@ public class SimulationTest {
     
     @Test
     public void testAcceptWorks() throws NameInUseException {
-        State x = new State("x", test_obs);
-        State y = new State("y", test_obs);
+        State x = new State("x", dummy_obs);
+        State y = new State("y", dummy_obs);
         y.setAccepting(true);
         x.addTransition(new Transition(y, "abc"));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -53,8 +53,8 @@ public class SimulationTest {
     
     @Test
     public void testRejectWorks() throws NameInUseException {
-        State x = new State("x", test_obs);
-        State y = new State("y", test_obs);
+        State x = new State("x", dummy_obs);
+        State y = new State("y", dummy_obs);
         y.setAccepting(true);
         x.addTransition(new Transition(y, "bc"));
         Simulation sim = new Simulation(new Tape("a"), x);
