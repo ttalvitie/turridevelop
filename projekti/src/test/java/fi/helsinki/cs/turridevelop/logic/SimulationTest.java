@@ -40,6 +40,36 @@ public class SimulationTest {
     }
     
     @Test
+    public void testFirstAcceptWorks() throws NameInUseException {
+        State x = new State("x", dummy_obs);
+        x.setAccepting(true);
+        Simulation sim = new Simulation(new Tape(), x);
+        assertEquals(SimulationStatus.ACCEPTED, sim.getStatus());
+        assertEquals(x, sim.getState());
+    }
+    
+    @Test
+    public void testAcceptedStepDoesNothing() throws NameInUseException {
+        State x = new State("x", dummy_obs);
+        x.setAccepting(true);
+        Simulation sim = new Simulation(new Tape(), x);
+        sim.step();
+        assertEquals(SimulationStatus.ACCEPTED, sim.getStatus());
+        assertEquals(x, sim.getState());
+    }
+    
+    @Test
+    public void testRejectedStepDoesNothing() throws NameInUseException {
+        State x = new State("x", dummy_obs);
+        Simulation sim = new Simulation(new Tape(), x);
+        for(int i = 0; i < 2; i++) {
+            sim.step();
+            assertEquals(SimulationStatus.REJECTED, sim.getStatus());
+            assertEquals(x, sim.getState());
+        }
+    }
+    
+    @Test
     public void testAcceptWorks() throws NameInUseException {
         State x = new State("x", dummy_obs);
         State y = new State("y", dummy_obs);
