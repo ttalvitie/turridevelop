@@ -85,4 +85,23 @@ public class Tape {
         
         tape.setCharAt(pos, c);
     }
+    
+    /**
+     * Get the contents of the tape as a string.
+     * 
+     * @return The minimal leading portion of the tape such that all characters
+     * after it are empty characters.
+     */
+    public String getContents() {
+        // First remove the remaining empty characters from the explicitly
+        // stored part.
+        while(
+            tape.length() != 0 &&
+            tape.charAt(tape.length() - 1) == getEmptyCharacter()
+        ) {
+            tape.deleteCharAt(tape.length() - 1);
+        }
+        
+        return tape.toString();
+    }
 }

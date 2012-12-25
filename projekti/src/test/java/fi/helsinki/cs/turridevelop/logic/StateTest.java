@@ -117,5 +117,5 @@ public class StateTest {
         assertEquals(null, state.getTransitionByInput('a'));
         assertEquals(null, state.getTransitionByInput('b'));
         assertEquals(null, state.getTransitionByInput('c'));
-   }
- }
+    }
+}

@@ -51,4 +51,23 @@ public class TapeTest {
         assertEquals('z', tape.getCharacterAt(0));
         assertEquals('z', tape.getCharacterAt(5));
     }
+    
+    @Test
+    public void testGetContentsWorks() {
+        Tape tape = new Tape("abcdef");
+        assertEquals("abcdef", tape.getContents());
+    }
+    
+    @Test
+    public void testGetContentsWorksWithEmptyInInputEnd() {
+        Tape tape = new Tape("abcdefzzzz", 'z');
+        assertEquals("abcdef", tape.getContents());
+    }
+    
+    @Test
+    public void testSetWorks() {
+        Tape tape = new Tape('z');
+        tape.setCharacterAt(5, 'x');
+        assertEquals("zzzzzx", tape.getContents());
+    }
 }
