@@ -17,20 +17,35 @@ public class Tape {
     private StringBuilder tape;
     
     /**
-     * Constructs empty tape.
+     * Constructs tape.
      * 
      * @param empty_char The character of all positions of the tape initially.
+     * @param input The content of the initial portion of the tape.
      */
-    public Tape(char empty_char) {
+    public Tape(String input, char empty_char) {
         this.empty_char = empty_char;
-        tape = new StringBuilder();
+        tape = new StringBuilder(input);
     }
     
     /**
-     * Equivalent to Tape('␣').
+     * Equivalent to Tape("", '␣').
      */
     public Tape() {
-        this('␣');
+        this("", '␣');
+    }
+    
+    /**
+     * Equivalent to Tape(input, '␣').
+     */
+    public Tape(String input) {
+        this(input, '␣');
+    }
+    
+    /**
+     * Equivalent to Tape("", empty_char).
+     */
+    public Tape(char empty_char) {
+        this("", empty_char);
     }
     
     /**

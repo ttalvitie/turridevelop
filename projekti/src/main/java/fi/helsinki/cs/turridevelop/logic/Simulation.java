@@ -47,6 +47,17 @@ public class Simulation {
     }
     
     /**
+     * Get the state the simulation is currently/was last.
+     * 
+     * @return If the simulation status is REJECTED, the state from which the
+     * simulation could not continue. If the simulation status is ACCEPTED, the
+     * accepting state of the simulation. Otherwise the current state.
+     */
+    public State getState() {
+        return state;
+    }
+    
+    /**
      * If the simulation is still running, run it one transition forward.
      */
     public void step() {
@@ -70,6 +81,17 @@ public class Simulation {
             if(state.isAccepting()) {
                 status = SimulationStatus.ACCEPTED;
             }
+        }
+    }
+    
+    /**
+     * Step the simulation until the status is no longer RUNNING.
+     * 
+     * Note that if the simulation might not terminate.
+     */
+    public void run() {
+        while(getStatus() == SimulationStatus.RUNNING) {
+            step();
         }
     }
 }
