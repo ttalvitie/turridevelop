@@ -6,21 +6,31 @@ import java.util.HashMap;
 /**
  * A Turing machine.
  */
-public class Machine implements StateNameStorage {
+public class Machine implements StateObserver {
+    /**
+     * Name of the machine.
+     */
     private String name;
-    private MachineNameStorage name_storage;
+    
+    /**
+     * Observer that is notified on changes.
+     */
+    private MachineObserver observer;
+    
+    /**
+     * Hash map of the states of the machine by their names.
+     */
     private HashMap<String, State> states;
     
     /**
      * Constructs empty Turing machine.
      * 
      * @param name Name of the machine.
-     * @param name_storage Object for which onMachineNameChange is called with
-     * the old name of the Machine after the name has changed.
+     * @param observer Observer that is notified of changes in the Machine.
      */
-    public Machine(String name, MachineNameStorage name_storage) {
+    public Machine(String name, MachineObserver observer) {
         this.name = name;
-        this.name_storage = name_storage;
+        this.observer = observer;
         this.states = new HashMap<String, State>();
     }
     
@@ -42,7 +52,7 @@ public class Machine implements StateNameStorage {
     public void setName(String name) throws NameInUseException {
         String oldname = this.name;
         this.name = name;
-        if(!name_storage.onMachineNameChange(oldname)) {
+        if(!observer.onMachineNameChange(oldname)) {
             this.name = oldname;
             throw new NameInUseException();
         }

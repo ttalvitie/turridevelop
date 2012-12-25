@@ -1,9 +1,9 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 /**
- * Observer for tracking changes of Machine names.
+ * Observer for tracking changes of Machines.
  */
-public interface MachineNameStorage {
+public interface MachineObserver {
     /**
      * Function called after the name of a machine changes.
      * 

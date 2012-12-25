@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-class DummyStateNameStorage implements StateNameStorage {
+class DummyStateObserver implements StateObserver {
     @Override
     public boolean onStateNameChange(String oldname) {
         return true;
@@ -17,7 +17,7 @@ class DummyStateNameStorage implements StateNameStorage {
 }
 
 public class SimulationTest {
-    DummyStateNameStorage dummy_obs;
+    DummyStateObserver dummy_obs;
     
     public SimulationTest() {
     }
@@ -32,7 +32,7 @@ public class SimulationTest {
     
     @Before
     public void setUp() {
-        dummy_obs = new DummyStateNameStorage();
+        dummy_obs = new DummyStateObserver();
     }
     
     @After

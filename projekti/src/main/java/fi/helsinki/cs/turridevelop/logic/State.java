@@ -14,9 +14,9 @@ public class State {
     private String name;
     
     /**
-     * Storage that is notified when name is changed.
+     * Observer that is notified on changes.
      */
-    private StateNameStorage name_storage;
+    private StateObserver observer;
     
     /**
      * Transitions from this state.
@@ -39,12 +39,11 @@ public class State {
      * The state is set to non-accepting initially.
      * 
      * @param name The name of the state.
-     * @param name_storage Object for which onStateNameChange is called with
-     * the old name of the State after the name has changed. 
+     * @param observer Observer that is notified of changes in the State.
      */
-    public State(String name, StateNameStorage name_storage) {
+    public State(String name, StateObserver observer) {
         this.name = name;
-        this.name_storage = name_storage;
+        this.observer = observer;
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
         accepting = false;
@@ -87,7 +86,7 @@ public class State {
     public void setName(String name) throws NameInUseException {
         String oldname = this.name;
         this.name = name;
-        if(!name_storage.onStateNameChange(oldname)) {
+        if(!observer.onStateNameChange(oldname)) {
             this.name = oldname;
             throw new NameInUseException();
         }

@@ -1,9 +1,9 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 /**
- * Observer for tracking changes of State names.
+ * Observer for tracking changes of States.
  */
-public interface StateNameStorage {
+public interface StateObserver {
     /**
      * Function called after the name of a state changes.
      * 

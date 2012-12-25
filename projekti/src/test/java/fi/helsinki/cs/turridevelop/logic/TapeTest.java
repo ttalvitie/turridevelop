@@ -65,6 +65,12 @@ public class TapeTest {
     }
     
     @Test
+    public void testGetContentsWorksIfEmpty() {
+        Tape tape = new Tape("zzzz", 'z');
+        assertEquals("", tape.getContents());
+    }
+    
+    @Test
     public void testSetWorks() {
         Tape tape = new Tape('z');
         tape.setCharacterAt(5, 'x');

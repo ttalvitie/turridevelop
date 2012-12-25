@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  * Turing machine projects consisting of multiple Machines.
  */
-public class Project implements MachineNameStorage {
+public class Project implements MachineObserver {
     private HashMap<String, Machine> machines;
     
     /**
