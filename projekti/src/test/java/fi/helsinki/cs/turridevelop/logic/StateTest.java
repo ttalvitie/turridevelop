@@ -49,7 +49,7 @@ public class StateTest {
     
     @Test
     public void testAddTransitionWorks() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
+        Transition t = new Transition(state2, "ab", 0);
         state.addTransition(t);
         assertEquals(1, state.getTransitions().size());
         assertTrue(state.getTransitions().contains(t));
@@ -57,7 +57,7 @@ public class StateTest {
     
     @Test
     public void testAddTransitionAddsByInput() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
+        Transition t = new Transition(state2, "ab", 0);
         state.addTransition(t);
         assertEquals(t, state.getTransitionByInput('a'));
         assertEquals(t, state.getTransitionByInput('b'));
@@ -66,7 +66,7 @@ public class StateTest {
     
     @Test
     public void testRemoveTransitionRemovesByInput() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
+        Transition t = new Transition(state2, "ab", 0);
         state.addTransition(t);
         state.removeTransition(t);
         assertEquals(null, state.getTransitionByInput('a'));
@@ -76,16 +76,16 @@ public class StateTest {
     
     @Test(expected=NameInUseException.class)
     public void testAddTransitionClashDetectionWorks() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
-        Transition t2 = new Transition(state2, "bc");
+        Transition t = new Transition(state2, "ab", 0);
+        Transition t2 = new Transition(state2, "bc", 0);
         state.addTransition(t);
         state.addTransition(t2);
     }
     
     @Test
     public void testAddTransitionClashDetectionChangesNothing() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
-        Transition t2 = new Transition(state2, "bc");
+        Transition t = new Transition(state2, "ab", 0);
+        Transition t2 = new Transition(state2, "bc", 0);
         state.addTransition(t);
         try {
             state.addTransition(t2);
@@ -100,7 +100,7 @@ public class StateTest {
     
     @Test
     public void testMultipleAddTransitionWorks() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
+        Transition t = new Transition(state2, "ab", 0);
         state.addTransition(t);
         state.addTransition(t);
         assertEquals(1, state.getTransitions().size());
@@ -109,7 +109,7 @@ public class StateTest {
     
     @Test
     public void testMultipleRemoveTransitionWorks() throws NameInUseException {
-        Transition t = new Transition(state2, "ab");
+        Transition t = new Transition(state2, "ab", 0);
         state.addTransition(t);
         state.removeTransition(t);
         state.removeTransition(t);

@@ -61,20 +61,6 @@ public class Transition {
     }
     
     /**
-     * Equivalent to Transition(State, inchar, outchar, 0).
-     */
-    public Transition(State destination, String inchar, Character outchar) {
-        this(destination, inchar, outchar, 0);
-    }
-    
-    /**
-     * Equivalent to Transition(State, inchar, null, 0).
-     */
-    public Transition(State destination, String inchar) {
-        this(destination, inchar, null, 0);
-    }
-    
-    /**
      * Gets the destination of the transition.
      * 
      * @return The destination.

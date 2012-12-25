@@ -47,7 +47,7 @@ public class Simulation {
     }
     
     /**
-     * Get the state the simulation is currently/was last.
+     * Gets the state the simulation is currently/was last.
      * 
      * @return If the simulation status is REJECTED, the state from which the
      * simulation could not continue. If the simulation status is ACCEPTED, the
@@ -58,7 +58,16 @@ public class Simulation {
     }
     
     /**
-     * If the simulation is still running, run it one transition forward.
+     * Gets the head of the simulation.
+     * 
+     * @return The head that is used throughout the simulation.
+     */
+    public Head getHead() {
+        return head;
+    }
+    
+    /**
+     * If the simulation is still running, runs it one transition forward.
      */
     public void step() {
         if(status == SimulationStatus.RUNNING) {

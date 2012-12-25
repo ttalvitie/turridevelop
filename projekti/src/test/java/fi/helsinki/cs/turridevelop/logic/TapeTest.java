@@ -29,7 +29,7 @@ public class TapeTest {
     }
     
     @Test
-    public void readInsideWorks() {
+    public void testReadInsideWorks() {
         Tape tape = new Tape("asd");
         assertEquals('a', tape.getCharacterAt(0));
         assertEquals('s', tape.getCharacterAt(1));
@@ -37,10 +37,18 @@ public class TapeTest {
     }
     
     @Test
-    public void readOutsideWorks() {
+    public void testReadOutsideWorks() {
         Tape tape = new Tape("asd");
         assertEquals(tape.getEmptyCharacter(), tape.getCharacterAt(3));
         assertEquals(tape.getEmptyCharacter(), tape.getCharacterAt(4));
         assertEquals(tape.getEmptyCharacter(), tape.getCharacterAt(7));
+    }
+    
+    @Test
+    public void testOtherEmptyCharacterWorks() {
+        Tape tape = new Tape('z');
+        assertEquals('z', tape.getEmptyCharacter());
+        assertEquals('z', tape.getCharacterAt(0));
+        assertEquals('z', tape.getCharacterAt(5));
     }
 }
