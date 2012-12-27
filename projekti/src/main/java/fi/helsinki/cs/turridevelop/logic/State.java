@@ -1,8 +1,10 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * State of a Turing machine.
@@ -36,7 +38,7 @@ public class State {
     /**
      * Constructs a Turing machine state.
      * 
-     * The state is set to non-accepting initially.
+     * The state is set to non-accepting and placed in origin initially.
      * 
      * @param name The name of the state.
      * @param observer Observer that is notified of changes in the State.
@@ -97,8 +99,8 @@ public class State {
      * 
      * @return HashSet of all the transitions.
      */
-    HashSet<Transition> getTransitions() {
-        return transitions;
+    public Set<Transition> getTransitions() {
+        return Collections.unmodifiableSet(transitions);
     }
     
     /**

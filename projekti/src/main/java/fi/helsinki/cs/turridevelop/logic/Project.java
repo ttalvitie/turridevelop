@@ -22,7 +22,7 @@ public class Project implements MachineObserver {
      * @param name Name of the machine.
      * @return The machine or null if not found.
      */
-    Machine getMachine(String name) {
+    public Machine getMachine(String name) {
         return machines.get(name);
     }
     
@@ -33,7 +33,7 @@ public class Project implements MachineObserver {
      * @throws NameInUseException if the name is already in use.
      * @return The created machine.
      */
-    Machine addMachine(String name) throws NameInUseException {
+    public Machine addMachine(String name) throws NameInUseException {
         if(machines.containsKey(name)) {
             throw new NameInUseException();
         }

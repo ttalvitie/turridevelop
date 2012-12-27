@@ -1,7 +1,9 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * A Turing machine.
@@ -66,6 +68,15 @@ public class Machine implements StateObserver {
      */
     public State getState(String name) {
         return states.get(name);
+    }
+    
+    /**
+     * Get the set of state names.
+     * 
+     * @return The set of state names.
+     */
+    public Set<String> getStateNames() {
+        return Collections.unmodifiableSet(states.keySet());
     }
     
     /**
