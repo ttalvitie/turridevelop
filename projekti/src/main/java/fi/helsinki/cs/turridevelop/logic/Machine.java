@@ -1,6 +1,8 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import fi.helsinki.cs.turridevelop.util.ByNameContainer;
+import fi.helsinki.cs.turridevelop.util.ByNameStored;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -8,32 +10,33 @@ import java.util.Set;
 /**
  * A Turing machine.
  */
-public class Machine implements StateObserver {
+public class Machine implements ByNameStored {
     /**
      * Name of the machine.
      */
     private String name;
     
     /**
-     * Observer that is notified on changes.
+     * The container containing the machine.
      */
-    private MachineObserver observer;
+    private ByNameContainer<Machine> container;
     
     /**
-     * Hash map of the states of the machine by their names.
+     * States of the machine.
      */
-    private HashMap<String, State> states;
+    private ByNameContainer<State> states;
     
     /**
      * Constructs empty Turing machine.
      * 
      * @param name Name of the machine.
-     * @param observer Observer that is notified of changes in the Machine.
+     * @param container Container containing the machine that is notified on
+     * name changes.
      */
-    public Machine(String name, MachineObserver observer) {
+    public Machine(String name, ByNameContainer<Machine> container) {
         this.name = name;
-        this.observer = observer;
-        this.states = new HashMap<String, State>();
+        this.container = container;
+        this.states = new ByNameContainer<State>();
     }
     
     /**
@@ -52,12 +55,12 @@ public class Machine implements StateObserver {
      * @throws NameInUseException if the name is already in use.
      */
     public void setName(String name) throws NameInUseException {
-        String oldname = this.name;
-        this.name = name;
-        if(!observer.onMachineNameChange(oldname)) {
-            this.name = oldname;
+        if(container.has(name)) {
             throw new NameInUseException();
         }
+        String oldname = this.name;
+        this.name = name;
+        container.nameChanged(oldname);
     }
     
     /**
@@ -76,7 +79,7 @@ public class Machine implements StateObserver {
      * @return The set of state names.
      */
     public Set<String> getStateNames() {
-        return Collections.unmodifiableSet(states.keySet());
+        return states.getNames();
     }
     
     /**
@@ -87,22 +90,8 @@ public class Machine implements StateObserver {
      * @return The added state.
      */
     public State addState(String name) throws NameInUseException {
-        if(states.containsKey(name)) {
-            throw new NameInUseException();
-        }
-        State state = new State(name, this);
-        states.put(name, state);
+        State state = new State(name, states);
+        states.add(state);
         return state;
-    }
-
-    @Override
-    public boolean onStateNameChange(String oldname) {
-        State state = states.get(oldname);
-        if(states.containsKey(state.getName())) {
-            return false;
-        }
-        states.remove(oldname);
-        states.put(state.getName(), state);
-        return true;
     }
 }

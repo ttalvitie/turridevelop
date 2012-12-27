@@ -1,19 +1,22 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
-import java.util.HashMap;
+import fi.helsinki.cs.turridevelop.util.ByNameContainer;
 
 /**
  * Turing machine projects consisting of multiple Machines.
  */
-public class Project implements MachineObserver {
-    private HashMap<String, Machine> machines;
+public class Project {
+    /**
+     * The machines in the project.
+     */
+    private ByNameContainer<Machine> machines;
     
     /**
      * Constructs empty Project.
      */
     public Project() {
-        machines = new HashMap<String, Machine>();
+        machines = new ByNameContainer<Machine>();
     }
     
     /**
@@ -34,22 +37,8 @@ public class Project implements MachineObserver {
      * @return The created machine.
      */
     public Machine addMachine(String name) throws NameInUseException {
-        if(machines.containsKey(name)) {
-            throw new NameInUseException();
-        }
-        Machine machine = new Machine(name, this);
-        machines.put(name, machine);
+        Machine machine = new Machine(name, machines);
+        machines.add(machine);
         return machine;
-    }
-    
-    @Override
-    public boolean onMachineNameChange(String oldname) {
-        Machine machine = machines.get(oldname);
-        if(machines.containsKey(machine.getName())) {
-            return false;
-        }
-        machines.remove(oldname);
-        machines.put(machine.getName(), machine);
-        return true;
     }
 }

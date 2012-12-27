@@ -1,6 +1,7 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import fi.helsinki.cs.turridevelop.util.ByNameContainer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -9,15 +10,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-class DummyStateObserver implements StateObserver {
-    @Override
-    public boolean onStateNameChange(String oldname) {
-        return true;
-    }
-}
-
 public class SimulationTest {
-    DummyStateObserver dummy_obs;
+    Machine mac;
     
     public SimulationTest() {
     }
@@ -32,7 +26,7 @@ public class SimulationTest {
     
     @Before
     public void setUp() {
-        dummy_obs = new DummyStateObserver();
+        mac = new Machine("mac", new ByNameContainer<Machine>());
     }
     
     @After
@@ -41,7 +35,7 @@ public class SimulationTest {
     
     @Test
     public void testFirstAcceptWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
+        State x = mac.addState("x");
         x.setAccepting(true);
         Simulation sim = new Simulation(new Tape(), x);
         assertEquals(SimulationStatus.ACCEPTED, sim.getStatus());
@@ -50,7 +44,7 @@ public class SimulationTest {
     
     @Test
     public void testAcceptedStepDoesNothing() throws NameInUseException {
-        State x = new State("x", dummy_obs);
+        State x = mac.addState("x");
         x.setAccepting(true);
         Simulation sim = new Simulation(new Tape(), x);
         sim.step();
@@ -60,7 +54,7 @@ public class SimulationTest {
     
     @Test
     public void testRejectedStepDoesNothing() throws NameInUseException {
-        State x = new State("x", dummy_obs);
+        State x = mac.addState("x");
         Simulation sim = new Simulation(new Tape(), x);
         for(int i = 0; i < 2; i++) {
             sim.step();
@@ -71,8 +65,8 @@ public class SimulationTest {
     
     @Test
     public void testAcceptWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
         y.setAccepting(true);
         x.addTransition(new Transition(y, "abc", 0));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -83,8 +77,8 @@ public class SimulationTest {
     
     @Test
     public void testRejectWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
         y.setAccepting(true);
         x.addTransition(new Transition(y, "bc", 0));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -95,8 +89,8 @@ public class SimulationTest {
     
     @Test
     public void testWriteWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
         y.setAccepting(true);
         x.addTransition(new Transition(y, "a", 'b', 0));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -106,8 +100,8 @@ public class SimulationTest {
     
     @Test
     public void testMoveRightWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
         y.setAccepting(true);
         x.addTransition(new Transition(y, "a", 1));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -117,8 +111,8 @@ public class SimulationTest {
     
     @Test
     public void testMoveLeftInLeftmostWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
         y.setAccepting(true);
         x.addTransition(new Transition(y, "a", -1));
         Simulation sim = new Simulation(new Tape("a"), x);
@@ -128,10 +122,10 @@ public class SimulationTest {
     
     @Test
     public void testMoveLeftWorks() throws NameInUseException {
-        State x = new State("x", dummy_obs);
-        State y = new State("y", dummy_obs);
-        State z = new State("z", dummy_obs);
-        State w = new State("w", dummy_obs);
+        State x = mac.addState("x");
+        State y = mac.addState("y");
+        State z = mac.addState("z");
+        State w = mac.addState("w");
         w.setAccepting(true);
         x.addTransition(new Transition(y, "a", 1));
         y.addTransition(new Transition(z, "b", 1));

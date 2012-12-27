@@ -1,6 +1,8 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import fi.helsinki.cs.turridevelop.util.ByNameContainer;
+import fi.helsinki.cs.turridevelop.util.ByNameStored;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,16 +11,16 @@ import java.util.Set;
 /**
  * State of a Turing machine.
  */
-public class State {
+public class State implements ByNameStored {
     /**
      * Name of the state.
      */
     private String name;
     
     /**
-     * Observer that is notified on changes.
+     * The container containing the state.
      */
-    private StateObserver observer;
+    private ByNameContainer<State> container;
     
     /**
      * Transitions from this state.
@@ -41,11 +43,12 @@ public class State {
      * The state is set to non-accepting and placed in origin initially.
      * 
      * @param name The name of the state.
-     * @param observer Observer that is notified of changes in the State.
+     * @param container Container containing the state that is notified on name
+     * changes.
      */
-    public State(String name, StateObserver observer) {
+    public State(String name, ByNameContainer<State> container) {
         this.name = name;
-        this.observer = observer;
+        this.container = container;
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
         accepting = false;
@@ -86,12 +89,12 @@ public class State {
      * @throws NameInUseException if the name is already in use.
      */
     public void setName(String name) throws NameInUseException {
-        String oldname = this.name;
-        this.name = name;
-        if(!observer.onStateNameChange(oldname)) {
-            this.name = oldname;
+        if(container.has(name)) {
             throw new NameInUseException();
         }
+        String oldname = this.name;
+        this.name = name;
+        container.nameChanged(oldname);
     }
     
     /**
