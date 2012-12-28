@@ -41,4 +41,13 @@ public class Project {
         machines.add(machine);
         return machine;
     }
+    
+    /**
+     * Removes a machine from the project, if exists.
+     * 
+     * @param name Name of the machine.
+     */
+    public void removeMachine(String name) {
+        machines.remove(name);
+    }
 }

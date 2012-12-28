@@ -59,33 +59,30 @@ public class TurrOutput {
      * @param transition The transition to be represented as JSON.
      * @return The JSON object representation.
      */
-    public static JSONObject transitionToJSON(Transition transition) {
+    private static JSONObject transitionToJSON(
+        Transition transition
+    ) throws JSONException {
         JSONObject ret_json = new JSONObject();
         
-        try {
-            ret_json.put("destination", transition.getDestination().getName());
-            ret_json.put("inchar", transition.getInputCharacters());
-            
-            if(transition.getOutputCharacter() == null) {
-                ret_json.put("outchar", JSONObject.NULL);
-            } else {
-                String outchar = transition.getOutputCharacter().toString();
-                ret_json.put("outchar", outchar);
-            }
-            
-            String move = "S";
-            if(transition.getMovement() == -1) {
-                move = "L";
-            }
-            if(transition.getMovement() == 1) {
-                move = "R";
-            }
-            
-            ret_json.put("move", move);
-        } catch(JSONException e) {
-            // All JSONExceptions are unexpected.
-            throw new RuntimeException("JSON failure.", e);
+        ret_json.put("destination", transition.getDestination().getName());
+        ret_json.put("inchar", transition.getInputCharacters());
+
+        if(transition.getOutputCharacter() == null) {
+            ret_json.put("outchar", JSONObject.NULL);
+        } else {
+            String outchar = transition.getOutputCharacter().toString();
+            ret_json.put("outchar", outchar);
         }
+
+        String move = "S";
+        if(transition.getMovement() == -1) {
+            move = "L";
+        }
+        if(transition.getMovement() == 1) {
+            move = "R";
+        }
+
+        ret_json.put("move", move);
         
         return ret_json;
     }
