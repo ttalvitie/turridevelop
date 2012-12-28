@@ -2,6 +2,7 @@ package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.util.ByNameContainer;
+import java.util.Set;
 
 /**
  * Turing machine projects consisting of multiple Machines.
@@ -27,6 +28,15 @@ public class Project {
      */
     public Machine getMachine(String name) {
         return machines.get(name);
+    }
+    
+    /**
+     * Gets the set of machine names.
+     * 
+     * @return The set of machine names.
+     */
+    public Set<String> getMachineNames() {
+        return machines.getNames();
     }
     
     /**

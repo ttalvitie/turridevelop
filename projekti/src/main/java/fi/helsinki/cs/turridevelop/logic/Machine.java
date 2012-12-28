@@ -74,7 +74,7 @@ public class Machine implements ByNameStored {
     }
     
     /**
-     * Get the set of state names.
+     * Gets the set of state names.
      * 
      * @return The set of state names.
      */

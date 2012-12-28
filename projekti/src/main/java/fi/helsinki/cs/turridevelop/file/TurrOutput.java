@@ -1,8 +1,10 @@
 package fi.helsinki.cs.turridevelop.file;
 
 import fi.helsinki.cs.turridevelop.logic.Machine;
+import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
+import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +14,21 @@ import org.json.JSONObject;
  */
 public class TurrOutput {
     /**
-     * Gets the JSON object representation of a Machine.
+     * Gets the representation of a Project as a directory of Turr JSON objects.
+     * 
+     * @param project The project to be represented as JSON.
+     * @return Hashmap from machine names to their JSONObject representations.
+     */
+    public static HashMap<String, JSONObject> projectToJSON(Project project) {
+        HashMap<String, JSONObject> ret = new HashMap<String, JSONObject>();
+        for(String name : project.getMachineNames()) {
+            ret.put(name, machineToJSON(project.getMachine(name)));
+        }
+        return ret;
+    }
+    
+    /**
+     * Gets the JSON object representation of a Machine in Turr format.
      * 
      * @param machine The machine to be represented as JSON.
      * @return The JSON object representation.
