@@ -117,6 +117,16 @@ public class State implements ByNameStored {
     }
     
     /**
+     * Gets the set of input characters for the state.
+     * 
+     * @return The set of characters such that there is transition that reads
+     * the character.
+     */
+    public Set<Character> getInputCharacters() {
+        return Collections.unmodifiableSet(transitions_by_input.keySet());
+    }
+    
+    /**
      * Adds transition to the state.
      * 
      * @param transition The transition to be added.
