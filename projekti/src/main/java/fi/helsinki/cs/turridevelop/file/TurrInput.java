@@ -6,6 +6,11 @@ import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.json.JSONArray;
@@ -16,6 +21,89 @@ import org.json.JSONException;
  * Functions for reading Turr files.
  */
 public class TurrInput {
+    /**
+     * Reads a project directory.
+     * 
+     * @param dir The project directory to read.
+     * @return The project read from all .turr-machine files from the directory.
+     * @throws MalformedFileException if the project directory can not be read
+     * from.
+     */
+    public static Project readProjectDirectory(
+        File dir
+    ) throws MalformedFileException {
+        // Get the files with .turr-extension.
+        File[] files = dir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                String name = file.getName().toLowerCase();
+                String extension = ".turr";
+                if(name.length() < extension.length()) {
+                    return false;
+                } else {
+                    int start = name.length() - extension.length();
+                    String ending = name.substring(start);
+                    return ending.equals(extension);
+                }
+            }
+        });
+        
+        if(files == null) {
+            throw new MalformedFileException(
+                "Could not open project directory '" + dir + "'"
+            );
+        }
+        
+        // Read the JSON machine files.
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        for(File file : files) {
+            String file_name = file.getName();
+            int end_index = file_name.length() - ".turr".length();
+            String name = file_name.substring(0, end_index);
+            if(json.containsKey(name)) {
+                throw new MalformedFileException(
+                    "Multiple machines with name '" +
+                    name + "' in the directory."
+                );
+            }
+            
+            StringBuilder source = new StringBuilder();
+            try {
+                FileInputStream in = new FileInputStream(file);
+                InputStreamReader reader = new InputStreamReader(in, "UTF-8");
+                
+                char[] buffer = new char[1024];
+                int read;
+                while((read = reader.read(buffer, 0, 1024)) != -1) {
+                    source.append(buffer, 0, read);
+                }
+            } catch(Exception e) {
+                throw new MalformedFileException(
+                    "Could not open machine file '" + file + "'."
+                );
+            }
+            
+            JSONObject machine_json;
+            try {
+                machine_json = new JSONObject(source.toString());
+            } catch(JSONException e) {
+                throw new MalformedFileException(
+                    "Could not parse JSON from machine file '" + file + "'."
+                );
+            }
+            json.put(name, machine_json);
+        }
+        
+        Project project;
+        try {
+            project = JSONToProject(json);
+        } catch(MalformedFileException e) {
+            throw new MalformedFileException("Malformed machine files.");
+        }
+        
+        return project;
+    }
+    
     /**
      * Reads a directory of JSON object representations of machines in Turr
      * format, and creates a Project from the representations.

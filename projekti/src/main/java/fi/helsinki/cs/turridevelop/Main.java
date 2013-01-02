@@ -8,16 +8,7 @@ import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
 
 public class Main {
-    public static void main(String[] args) throws NameInUseException {
-        // JSON test:
-        Project p = new Project();
-        Machine m = p.addMachine("m");
-        
-        State a = m.addState("a");
-        State b = m.addState("b");
-        b.setAccepting(true);
-        a.addTransition(new Transition(b, "xyz", 'w', 5));
-        
-        System.out.println(TurrOutput.machineToJSON(m));
+    public static void main(String[] args) {
+        System.out.println("nothing here");
     }
 }
