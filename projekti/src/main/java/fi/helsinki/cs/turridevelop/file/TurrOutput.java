@@ -1,9 +1,14 @@
 package fi.helsinki.cs.turridevelop.file;
 
+import fi.helsinki.cs.turridevelop.exceptions.FilesystemException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +18,36 @@ import org.json.JSONObject;
  * Functions for writing Turr files.
  */
 public class TurrOutput {
+    /**
+     * Write the project to directory.
+     * 
+     * @param project The project to write.
+     * @param dir The existent directory that the project should be written to.
+     * 
+     * @throws FilesystemException if some files could not be written.
+     */
+    public static void writeProject(
+        Project project,
+        File dir
+    ) throws FilesystemException {
+        HashMap<String, JSONObject> json = projectToJSON(project);
+        for(String machine_name : json.keySet()) {
+            String machine_json = json.get(machine_name).toString();
+            
+            File file = new File(dir, machine_name + ".turr");
+            
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+                writer.write(machine_json, 0, machine_json.length());
+            } catch(Exception e) {
+                throw new FilesystemException(
+                    "Could not write machine file '" + file + "'."
+                );
+            }
+        }
+    }
+    
     /**
      * Gets the representation of a Project as a directory of Turr JSON objects.
      * 

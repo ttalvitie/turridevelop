@@ -32,21 +32,8 @@ public class TurrInput {
     public static Project readProjectDirectory(
         File dir
     ) throws MalformedFileException {
-        // Get the files with .turr-extension.
-        File[] files = dir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                String name = file.getName().toLowerCase();
-                String extension = ".turr";
-                if(name.length() < extension.length()) {
-                    return false;
-                } else {
-                    int start = name.length() - extension.length();
-                    String ending = name.substring(start);
-                    return ending.equals(extension);
-                }
-            }
-        });
+        // Get the files in the directory.
+        File[] files = dir.listFiles();
         
         if(files == null) {
             throw new MalformedFileException(
@@ -57,9 +44,17 @@ public class TurrInput {
         // Read the JSON machine files.
         HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
         for(File file : files) {
-            String file_name = file.getName();
-            int end_index = file_name.length() - ".turr".length();
-            String name = file_name.substring(0, end_index);
+            String filename = file.getName();
+            String extension = ".turr";
+            int extension_start = filename.length() - extension.length();
+            if(
+                extension_start < 0 ||
+                !filename.substring(extension_start).equals(extension)
+            ) {
+                break;
+            }
+            String name = filename.substring(0, extension_start);
+            
             if(json.containsKey(name)) {
                 throw new MalformedFileException(
                     "Multiple machines with name '" +
