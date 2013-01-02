@@ -1,14 +1,15 @@
 package fi.helsinki.cs.turridevelop;
 
-import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
-import fi.helsinki.cs.turridevelop.file.TurrOutput;
-import fi.helsinki.cs.turridevelop.logic.Machine;
-import fi.helsinki.cs.turridevelop.logic.Project;
-import fi.helsinki.cs.turridevelop.logic.State;
-import fi.helsinki.cs.turridevelop.logic.Transition;
+import fi.helsinki.cs.turridevelop.gui.ProjectWindow;
+import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("nothing here");
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ProjectWindow window = new ProjectWindow();
+            }
+        });
     }
 }
