@@ -11,11 +11,11 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Functions for reading Turr files.
@@ -145,8 +145,9 @@ public class TurrInput {
         JSONObject states_json = json.getJSONObject("states");
         
         // First add states without transitions.
-        for(Object statename_obj : states_json.keySet()) {
-            String statename = (String) statename_obj;
+        Iterator iter = states_json.keys();
+        while(iter.hasNext()) {
+            String statename = (String) iter.next();
             State state = machine.addState(statename);
             JSONObject state_json = states_json.getJSONObject(statename);
             
@@ -157,8 +158,9 @@ public class TurrInput {
         
         // Then add transitions, because now all destination states should
         // exist.
-        for(Object statename_obj : states_json.keySet()) {
-            String statename = (String) statename_obj;
+        iter = states_json.keys();
+        while(iter.hasNext()) {
+            String statename = (String) iter.next();
             State state = machine.getState(statename);
             JSONObject state_json = states_json.getJSONObject(statename);
             JSONArray transitions_json = state_json.getJSONArray("transitions");
