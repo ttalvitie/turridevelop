@@ -6,8 +6,8 @@ import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
+import fi.helsinki.cs.turridevelop.util.Vec2;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -149,6 +149,10 @@ public class TurrInput {
             if(state_json.get("accepting").equals(true)) {
                 state.setAccepting(true);
             }
+            
+            double x = state_json.getDouble("x");
+            double y = state_json.getDouble("y");
+            state.setPosition(new Vec2(x, y));
         }
         
         // Then add transitions, because now all destination states should

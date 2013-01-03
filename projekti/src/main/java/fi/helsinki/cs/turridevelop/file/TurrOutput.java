@@ -89,6 +89,9 @@ public class TurrOutput {
                 
                 state_json.put("accepting", state.isAccepting());
                 
+                state_json.put("x", state.getPosition().x);
+                state_json.put("y", state.getPosition().y);
+                
                 states_json.put(state.getName(), state_json);
             }
             

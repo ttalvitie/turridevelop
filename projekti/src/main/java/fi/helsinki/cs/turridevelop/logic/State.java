@@ -3,6 +3,7 @@ package fi.helsinki.cs.turridevelop.logic;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.util.ByNameContainer;
 import fi.helsinki.cs.turridevelop.util.ByNameStored;
+import fi.helsinki.cs.turridevelop.util.Vec2;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,11 @@ public class State implements ByNameStored {
     private boolean accepting;
     
     /**
+     * The position of the state in the diagram representation.
+     */
+    Vec2 pos;
+    
+    /**
      * Constructs a Turing machine state.
      * 
      * The state is set to non-accepting and placed in origin initially.
@@ -52,6 +58,7 @@ public class State implements ByNameStored {
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
         accepting = false;
+        pos = new Vec2();
     }
     
     /**
@@ -174,5 +181,23 @@ public class State implements ByNameStored {
                 transitions_by_input.remove(c);
             }
         }
+    }
+    
+    /**
+     * Get the position of the state.
+     * 
+     * @return The position of the state in the state diagram.
+     */
+    public Vec2 getPosition() {
+        return pos;
+    }
+    
+    /**
+     * Set the position of the state.
+     * 
+     * @param pos The new position of the state in the state diagram.
+     */
+    public void setPosition(Vec2 pos) {
+        this.pos = pos;
     }
 }
