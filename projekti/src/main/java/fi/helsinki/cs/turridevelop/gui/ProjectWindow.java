@@ -68,6 +68,7 @@ public class ProjectWindow {
     public ProjectWindow() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(300, 200));
         
         // Add menus.
         JMenuBar menubar = new JMenuBar();
@@ -240,6 +241,8 @@ public class ProjectWindow {
             
             machinepanel = new JPanel();
             machinepanel.setLayout(new BorderLayout());
+            machinepanel.setMinimumSize(new Dimension(300, 300));
+            machinepanel.setPreferredSize(new Dimension(600, 600));
             
             JSplitPane split = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, machinelist_scroll, machinepanel
