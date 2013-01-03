@@ -45,7 +45,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
     private Vec2 centerpos;
     
     /**
-     * The currently active state.
+     * The currently active state. Change only through setActiveState.
      */
     private State active_state;
     
@@ -88,7 +88,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         font = new Font("SansSerif", Font.PLAIN, 14);
         drag_button = MouseEvent.NOBUTTON;
         
-        editpanel.add(new JButton("Editpanel for " + machine.getName()));
+        setActiveState(null);
         
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -137,18 +137,16 @@ extends JPanel implements MouseListener, MouseMotionListener {
             for(String statename : machine.getStateNames()) {
                 State state = machine.getState(statename);
                 if(getStateEllipse(state).contains(pos.x, pos.y)) {
-                    active_state = state;
+                    setActiveState(state);
                     found = true;
                 }
             }
 
             // Otherwise, deactivate state.
             if(!found) {
-                active_state = null;
+                setActiveState(null);
             }
         }
-        
-        repaint();
         
         // Start the drag if there is none already.
         if(drag_button == MouseEvent.NOBUTTON) {
@@ -441,5 +439,26 @@ extends JPanel implements MouseListener, MouseMotionListener {
         } else {
             return input + " -> " + output + ", " + movement;
         }
+    }
+    
+    /**
+     * Set the active state of the view.
+     * 
+     * @param state The new active state or null if there should be no active
+     * state.
+     */
+    private void setActiveState(State state) {
+        active_state = state;
+        
+        // Update the editing panel.
+        editpanel.removeAll();
+        if(state != null) {
+            editpanel.add(new JButton("Editointipaneeli: " + state.getName()));
+        }
+        
+        editpanel.revalidate();
+        editpanel.repaint();
+        
+        repaint();
     }
 }
