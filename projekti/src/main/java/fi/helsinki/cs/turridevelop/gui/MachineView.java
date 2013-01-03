@@ -19,6 +19,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -67,20 +68,30 @@ extends JPanel implements MouseListener, MouseMotionListener {
     private Vec2 drag_start;
     
     /**
+     * The panel to put state editor into.
+     */
+    private JPanel editpanel;
+    
+    /**
      * Constructs a MachineView panel.
      * 
      * @param machine The machine to be edited in the view.
+     * @param editpanel The panel to put the editing panel into.
      */
-    public MachineView(Machine machine) {
+    public MachineView(Machine machine, JPanel editpanel) {
         this.machine = machine;
         centerpos = new Vec2();
+        this.editpanel = editpanel;
         
         setBackground(Color.white);
-        addMouseListener(this);
-        addMouseMotionListener(this);
         
         font = new Font("SansSerif", Font.PLAIN, 14);
         drag_button = MouseEvent.NOBUTTON;
+        
+        editpanel.add(new JButton("Editpanel for " + machine.getName()));
+        
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
     
     /**

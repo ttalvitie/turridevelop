@@ -81,6 +81,11 @@ public class ProjectWindow {
      */
     private MachineView machineview;
     
+    /**
+     * The editing panel area. Valid if project != null.
+     */
+    private JPanel editpanel;
+    
     public ProjectWindow() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -347,9 +352,10 @@ public class ProjectWindow {
             machine = project.getMachine(machinename.getName());
         }
         machinepanel.removeAll();
+        editpanel.removeAll();
         machineview = null;
         if(machine != null) {
-            machineview = new MachineView(machine);
+            machineview = new MachineView(machine, editpanel);
             machinepanel.add(machineview);
         }
         
@@ -359,6 +365,9 @@ public class ProjectWindow {
         
         machinepanel.revalidate();
         machinepanel.repaint();
+        
+        editpanel.revalidate();
+        editpanel.repaint();
     }
     
     /**
@@ -394,10 +403,19 @@ public class ProjectWindow {
             });
             
             JScrollPane machinelist_scroll = new JScrollPane(machinelist);
-            machinelist_scroll.setMinimumSize(new Dimension(100, 0));
-            machinelist_scroll.setPreferredSize(new Dimension(200, 0));
+            machinelist_scroll.setMinimumSize(new Dimension(100, 100));
+            machinelist_scroll.setPreferredSize(new Dimension(200, 200));
             Border border = BorderFactory.createTitledBorder("Machines");
             machinelist_scroll.setBorder(border);
+            
+            editpanel = new JPanel();
+            editpanel.setLayout(new BorderLayout());
+            editpanel.setMinimumSize(new Dimension(100, 100));
+            editpanel.setPreferredSize(new Dimension(300, 300));
+            
+            JSplitPane leftsplit = new JSplitPane(
+                JSplitPane.VERTICAL_SPLIT, machinelist_scroll, editpanel
+            );
             
             machinepanel = new JPanel();
             machinepanel.setLayout(new BorderLayout());
@@ -405,7 +423,7 @@ public class ProjectWindow {
             machinepanel.setPreferredSize(new Dimension(600, 600));
             
             JSplitPane split = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, machinelist_scroll, machinepanel
+                JSplitPane.HORIZONTAL_SPLIT, leftsplit, machinepanel
             );
             frame.getContentPane().add(split);
             updateMachineList(null);
