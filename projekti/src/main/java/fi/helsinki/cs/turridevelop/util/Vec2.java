@@ -54,4 +54,18 @@ public class Vec2 {
     public Vec2 mul(double c) {
         return new Vec2(c * x, c * y);
     }
+    
+    /**
+     * Get the norm of the vector.
+     * 
+     * @return The norm/length/absolute value of the vector.
+     */
+    public double getNorm() {
+        return Math.sqrt(x * x + y * y);
+    }
+    
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }
