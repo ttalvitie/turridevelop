@@ -5,7 +5,10 @@ import fi.helsinki.cs.turridevelop.exceptions.MalformedFileException;
 import fi.helsinki.cs.turridevelop.file.TurrInput;
 import fi.helsinki.cs.turridevelop.file.TurrOutput;
 import fi.helsinki.cs.turridevelop.logic.Project;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -195,11 +198,12 @@ public class ProjectWindow {
     }
     
     private void machineSelected() {
-        JOptionPane.showMessageDialog(
-            frame,
-            "Congratulations, you have chosen machine '" +
-            machinelist.getSelectedValue() + "'."
-        );
+        String machinename = (String) machinelist.getSelectedValue(); 
+        machinepanel.removeAll();
+        if(machinename != null) {
+            machinepanel.add(new MachineView(project.getMachine(machinename)));
+        }
+        machinepanel.revalidate();
     }
     
     /**
@@ -235,12 +239,12 @@ public class ProjectWindow {
             machinelist_scroll.setBorder(border);
             
             machinepanel = new JPanel();
+            machinepanel.setLayout(new BorderLayout());
             
             JSplitPane split = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, machinelist_scroll, machinepanel
             );
             frame.getContentPane().add(split);
-            frame.pack();
             updateMachineList(null);
         }
         frame.pack();
