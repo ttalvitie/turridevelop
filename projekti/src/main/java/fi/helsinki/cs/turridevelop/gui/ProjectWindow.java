@@ -171,6 +171,15 @@ public class ProjectWindow {
         });
         menu.add(item);
         
+        item = new JMenuItem("Remove machine");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeMachineClicked();
+            }
+        });
+        menu.add(item);
+        
         item = new JMenuItem("New state");
         item.addActionListener(new ActionListener() {
             @Override
@@ -263,6 +272,10 @@ public class ProjectWindow {
     
     private void newMachineClicked() {
         String name = JOptionPane.showInputDialog(frame, "Machine name:");
+        if(name == null) {
+            return;
+        }
+        
         try {
             project.addMachine(name);
         } catch(NameInUseException e) {
@@ -288,6 +301,10 @@ public class ProjectWindow {
             "New name for machine '" + machine.getName() + "':",
             machine.getName()
         );
+        if(name == null) {
+            return;
+        }
+        
         if(name.equals(machine.getName())) {
             // Nothing needs to be done.
             return;
@@ -310,24 +327,36 @@ public class ProjectWindow {
         updateMachineList(name);
     }
     
+    private void removeMachineClicked() {
+        project.removeMachine(machineview.getMachine().getName());
+        updateMachineList(null);
+    }
+    
     void newStateClicked() {
         machineview.addState();
     }
     
     private void machineSelected() {
-        String machinename = (String) machinelist.getSelectedValue();
-        Machine machine = project.getMachine(machinename);
+        MachineName machinename = (MachineName) machinelist.getSelectedValue();
+        Machine machine;
+        if(machinename == null) {
+            machine = null;
+        } else {
+            machine = project.getMachine(machinename.getName());
+        }
         machinepanel.removeAll();
         machineview = null;
         if(machine != null) {
             machineview = new MachineView(machine);
             machinepanel.add(machineview);
         }
-        machinepanel.revalidate();
         
         for(AbstractButton item : machine_buttons) {
             item.setEnabled(machine != null);
         }
+        
+        machinepanel.revalidate();
+        machinepanel.repaint();
     }
     
     /**
@@ -387,23 +416,22 @@ public class ProjectWindow {
      * project.
      * 
      * @param selection After the update, the name of the machine that should
-     * be selected. If null, the machine with the same name as the previous
-     * selected machine will be selected if possible.
+     * be selected. If null, machines will be unselected.
      */
     private void updateMachineList(String selection) {
-        if(selection == null) {
-            selection = (String) machinelist.getSelectedValue();
-        }
-        
         Set<String> machinenames = project.getMachineNames();
-        String[] data = new String[machinenames.size()];
+        Object[] data = new Object[machinenames.size()];
         int index = 0;
         for(String name : machinenames) {
-            data[index] = name;
+            data[index] = new MachineName(name);
             index++;
         }
         machinelist.setListData(data);
         
-        machinelist.setSelectedValue(selection, true);
+        if(selection == null) {
+            machinelist.clearSelection();
+        } else {
+            machinelist.setSelectedValue(new MachineName(selection), true);
+        }
     }
 }
