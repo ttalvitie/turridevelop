@@ -7,6 +7,7 @@ import fi.helsinki.cs.turridevelop.file.TurrInput;
 import fi.helsinki.cs.turridevelop.file.TurrOutput;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
+import fi.helsinki.cs.turridevelop.logic.State;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -74,9 +75,9 @@ public class ProjectWindow {
     private JPanel machinepanel;
     
     /**
-     * The machine being edited, null if none.
+     * The currently visible machineview, null if none.
      */
-    private Machine machine;
+    private MachineView machineview;
     
     public ProjectWindow() {
         frame = new JFrame();
@@ -92,6 +93,15 @@ public class ProjectWindow {
         
         // File-menu:
         menu = new JMenu("File");
+        
+        item = new JMenuItem("New project");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newProjectClicked();
+            }
+        });
+        menu.add(item);
         
         item = new JMenuItem("Open project");
         item.addActionListener(new ActionListener() {
@@ -152,11 +162,20 @@ public class ProjectWindow {
         menu = new JMenu("Machine");
         machine_buttons.add(menu);
         
-        item = new JMenuItem("Rename");
+        item = new JMenuItem("Rename machine");
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 renameMachineClicked();
+            }
+        });
+        menu.add(item);
+        
+        item = new JMenuItem("New state");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newStateClicked();
             }
         });
         menu.add(item);
@@ -173,6 +192,10 @@ public class ProjectWindow {
         
         frame.pack();
         frame.setVisible(true);
+    }
+    
+    private void newProjectClicked() {
+        changeProject(new Project());
     }
     
     private void openProjectClicked() {
@@ -259,10 +282,16 @@ public class ProjectWindow {
     }
     
     private void renameMachineClicked() {
+        Machine machine = machineview.getMachine();
         String name = JOptionPane.showInputDialog(
             frame,
-            "New name for machine '" + machine.getName() + "':"
+            "New name for machine '" + machine.getName() + "':",
+            machine.getName()
         );
+        if(name.equals(machine.getName())) {
+            // Nothing needs to be done.
+            return;
+        }
         try {
             machine.setName(name);
         } catch(NameInUseException e) {
@@ -281,12 +310,18 @@ public class ProjectWindow {
         updateMachineList(name);
     }
     
+    void newStateClicked() {
+        machineview.addState();
+    }
+    
     private void machineSelected() {
         String machinename = (String) machinelist.getSelectedValue();
-        machine = project.getMachine(machinename);
+        Machine machine = project.getMachine(machinename);
         machinepanel.removeAll();
+        machineview = null;
         if(machine != null) {
-            machinepanel.add(new MachineView(machine));
+            machineview = new MachineView(machine);
+            machinepanel.add(machineview);
         }
         machinepanel.revalidate();
         

@@ -1,6 +1,7 @@
 
 package fi.helsinki.cs.turridevelop.gui;
 
+import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.util.Vec2;
@@ -76,6 +77,34 @@ extends JPanel implements MouseListener, MouseMotionListener {
         
         font = new Font("SansSerif", Font.PLAIN, 20);
         drag_button = MouseEvent.NOBUTTON;
+    }
+    
+    /**
+     * Get the machine being edited.
+     * 
+     * @return The machine being edited.
+     */
+    public Machine getMachine() {
+        return machine;
+    }
+    
+    /**
+     * Add new state to the machine.
+     */
+    public void addState() {
+        int statenumber = 1;
+        while(machine.getState("State #" + statenumber) != null) {
+            statenumber++;
+        }
+        
+        try {
+            State state = machine.addState("State #" + statenumber);
+            state.setPosition(centerpos);
+        } catch(NameInUseException e) {
+            throw new RuntimeException();
+        }
+        
+        repaint();
     }
     
     @Override
