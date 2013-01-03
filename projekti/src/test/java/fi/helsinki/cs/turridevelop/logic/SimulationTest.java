@@ -1,6 +1,7 @@
 package fi.helsinki.cs.turridevelop.logic;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
+import fi.helsinki.cs.turridevelop.file.TurrOutput;
 import fi.helsinki.cs.turridevelop.util.ByNameContainer;
 import org.junit.After;
 import org.junit.AfterClass;

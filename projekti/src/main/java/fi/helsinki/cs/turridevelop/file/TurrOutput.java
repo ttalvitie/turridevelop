@@ -40,6 +40,7 @@ public class TurrOutput {
                 FileOutputStream out = new FileOutputStream(file);
                 OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
                 writer.write(machine_json, 0, machine_json.length());
+                writer.close();
             } catch(Exception e) {
                 throw new FilesystemException(
                     "Could not write machine file '" + file + "'."

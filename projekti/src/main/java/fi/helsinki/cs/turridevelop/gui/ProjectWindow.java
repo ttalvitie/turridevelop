@@ -5,17 +5,33 @@ import fi.helsinki.cs.turridevelop.exceptions.MalformedFileException;
 import fi.helsinki.cs.turridevelop.file.TurrInput;
 import fi.helsinki.cs.turridevelop.file.TurrOutput;
 import fi.helsinki.cs.turridevelop.logic.Project;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.Stack;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Window where a single project is modified.
@@ -27,7 +43,7 @@ public class ProjectWindow {
     private JFrame frame;
     
     /**
-     * Project being manipulated, null if none.
+     * Project being manipulated, null if none. Change through changeProject.
      */
     private Project project;
     
@@ -35,6 +51,16 @@ public class ProjectWindow {
      * Menu items that should only be enabled when a project is open.
      */
     private ArrayList<JMenuItem> project_menuitems;
+    
+    /**
+     * The list of machines. Valid if project != null.
+     */
+    private JList machinelist;
+    
+    /**
+     * The machine editing area. Valid if project != null.
+     */
+    private JPanel machinepanel;
     
     public ProjectWindow() {
         frame = new JFrame();
@@ -97,6 +123,10 @@ public class ProjectWindow {
             menuitem.setEnabled(false);
         }
         
+        frame.getContentPane().setLayout(new BoxLayout(
+            frame.getContentPane(), BoxLayout.X_AXIS
+        ));
+        
         frame.pack();
         frame.setVisible(true);
     }
@@ -111,7 +141,7 @@ public class ProjectWindow {
         // A directory was chosen, try to open it.
         File dir = chooser.getSelectedFile();
         try {
-            project = TurrInput.readProjectDirectory(dir);
+            changeProject(TurrInput.readProjectDirectory(dir));
         } catch(MalformedFileException e) {
             JOptionPane.showMessageDialog(
                 frame,
@@ -121,19 +151,10 @@ public class ProjectWindow {
             );
             return;
         }
-        
-        // Opening succeeded.
-        for(JMenuItem menuitem : project_menuitems) {
-            menuitem.setEnabled(true);
-        }
     }
     
     private void closeProjectClicked() {
-        project = null;
-        
-        for(JMenuItem menuitem : project_menuitems) {
-            menuitem.setEnabled(false);
-        }
+        changeProject(null);
    }
     
     private void saveProjectAsClicked() {
@@ -171,5 +192,82 @@ public class ProjectWindow {
     
     private void quitButton() {
         System.exit(0);
+    }
+    
+    private void machineSelected() {
+        JOptionPane.showMessageDialog(
+            frame,
+            "Congratulations, you have chosen machine '" +
+            machinelist.getSelectedValue() + "'."
+        );
+    }
+    
+    /**
+     * Set the project of the class to project, update GUI accordingly.
+     * 
+     * @param newproject The new project.
+     */
+    private void changeProject(Project newproject) {
+        project = newproject;
+        
+        // Update the menu options.
+        for(JMenuItem item : project_menuitems) {
+            item.setEnabled(project != null);
+        }
+        
+        // Update the frame layout.
+        frame.getContentPane().removeAll();
+        if(project != null) {
+            // Machine list on the left, the machine panel on the right.
+            machinelist = new JList();
+            machinelist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            machinelist.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    machineSelected();
+                }
+            });
+            
+            JScrollPane machinelist_scroll = new JScrollPane(machinelist);
+            machinelist_scroll.setMinimumSize(new Dimension(100, 0));
+            machinelist_scroll.setPreferredSize(new Dimension(200, 0));
+            Border border = BorderFactory.createTitledBorder("Machines");
+            machinelist_scroll.setBorder(border);
+            
+            machinepanel = new JPanel();
+            
+            JSplitPane split = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, machinelist_scroll, machinepanel
+            );
+            frame.getContentPane().add(split);
+            frame.pack();
+            updateMachineList(null);
+        }
+        frame.pack();
+    }
+    
+    /**
+     * Updates machine list to match the list of machines in the current
+     * project.
+     * 
+     * @param selection After the update, the name of the machine that should
+     * be selected. If null, the machine with the same name as the previous
+     * selected machine will be selected if possible.
+     */
+    private void updateMachineList(String selection) {
+        if(selection == null) {
+            selection = (String) machinelist.getSelectedValue();
+        }
+        
+        Set<String> machinenames = project.getMachineNames();
+        String[] data = new String[machinenames.size()];
+        int index = 0;
+        for(String name : machinenames) {
+            data[index] = name;
+            index++;
+        }
+        machinelist.setListData(data);
+        
+        machinelist.setSelectedValue(selection, true);
     }
 }
