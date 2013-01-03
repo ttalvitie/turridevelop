@@ -2,8 +2,10 @@ package fi.helsinki.cs.turridevelop.gui;
 
 import fi.helsinki.cs.turridevelop.exceptions.FilesystemException;
 import fi.helsinki.cs.turridevelop.exceptions.MalformedFileException;
+import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.file.TurrInput;
 import fi.helsinki.cs.turridevelop.file.TurrOutput;
+import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -51,9 +54,14 @@ public class ProjectWindow {
     private Project project;
     
     /**
-     * Menu items that should only be enabled when a project is open.
+     * Buttons that should only be enabled when a project is open.
      */
-    private ArrayList<JMenuItem> project_menuitems;
+    private ArrayList<AbstractButton> project_buttons;
+    
+    /**
+     * Buttons that should only be enabled when a machine is being edited.
+     */
+    private ArrayList<AbstractButton> machine_buttons;
     
     /**
      * The list of machines. Valid if project != null.
@@ -65,6 +73,11 @@ public class ProjectWindow {
      */
     private JPanel machinepanel;
     
+    /**
+     * The machine being edited, null if none.
+     */
+    private Machine machine;
+    
     public ProjectWindow() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -74,9 +87,10 @@ public class ProjectWindow {
         JMenuBar menubar = new JMenuBar();
         JMenu menu;
         JMenuItem item;
-        project_menuitems = new ArrayList<JMenuItem>();
+        project_buttons = new ArrayList<AbstractButton>();
+        machine_buttons = new ArrayList<AbstractButton>();
         
-        // File-menu.
+        // File-menu:
         menu = new JMenu("File");
         
         item = new JMenuItem("Open project");
@@ -95,7 +109,7 @@ public class ProjectWindow {
                 closeProjectClicked();
             }
         });
-        project_menuitems.add(item);
+        project_buttons.add(item);
         menu.add(item);
         
         item = new JMenuItem("Save project as");
@@ -105,14 +119,44 @@ public class ProjectWindow {
                 saveProjectAsClicked();
             }
         });
-        project_menuitems.add(item);
+        project_buttons.add(item);
         menu.add(item);
         
         item = new JMenuItem("Quit");
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                quitButton();
+                quitClicked();
+            }
+        });
+        menu.add(item);
+        
+        menubar.add(menu);
+        
+        // Project-menu:
+        menu = new JMenu("Project");
+        project_buttons.add(menu);
+        
+        item = new JMenuItem("New machine");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newMachineClicked();
+            }
+        });
+        menu.add(item);
+        
+        menubar.add(menu);
+        
+        // Machine-menu:
+        menu = new JMenu("Machine");
+        machine_buttons.add(menu);
+        
+        item = new JMenuItem("Rename");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                renameMachineClicked();
             }
         });
         menu.add(item);
@@ -121,11 +165,7 @@ public class ProjectWindow {
         
         frame.setJMenuBar(menubar);
         
-        // Initially there are no projects open so disable all menu items that
-        // require a project to be open.
-        for(JMenuItem menuitem : project_menuitems) {
-            menuitem.setEnabled(false);
-        }
+        changeProject(null);
         
         frame.getContentPane().setLayout(new BoxLayout(
             frame.getContentPane(), BoxLayout.X_AXIS
@@ -194,17 +234,65 @@ public class ProjectWindow {
         }
     }
     
-    private void quitButton() {
+    private void quitClicked() {
         System.exit(0);
     }
     
+    private void newMachineClicked() {
+        String name = JOptionPane.showInputDialog(frame, "Machine name:");
+        try {
+            project.addMachine(name);
+        } catch(NameInUseException e) {
+            JOptionPane.showMessageDialog(
+                frame,
+                "Could not create machine with name '" + name + "':\n" +
+                "Name already in use.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        
+        // Adding the machine succeeded, update machine list and set the new
+        // machine as current.
+        updateMachineList(name);
+    }
+    
+    private void renameMachineClicked() {
+        String name = JOptionPane.showInputDialog(
+            frame,
+            "New name for machine '" + machine.getName() + "':"
+        );
+        try {
+            machine.setName(name);
+        } catch(NameInUseException e) {
+            JOptionPane.showMessageDialog(
+                frame,
+                "Could rename machine to '" + name + "':\n" +
+                "Name already in use.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        
+        // Renaming the machine succeeded, update machine list and set the same
+        // machine as current.
+        updateMachineList(name);
+    }
+    
     private void machineSelected() {
-        String machinename = (String) machinelist.getSelectedValue(); 
+        String machinename = (String) machinelist.getSelectedValue();
+        machine = project.getMachine(machinename);
         machinepanel.removeAll();
-        if(machinename != null) {
-            machinepanel.add(new MachineView(project.getMachine(machinename)));
+        if(machine != null) {
+            machinepanel.add(new MachineView(machine));
         }
         machinepanel.revalidate();
+        
+        for(AbstractButton item : machine_buttons) {
+            item.setEnabled(machine != null);
+        }
     }
     
     /**
@@ -215,9 +303,15 @@ public class ProjectWindow {
     private void changeProject(Project newproject) {
         project = newproject;
         
-        // Update the menu options.
-        for(JMenuItem item : project_menuitems) {
+        // Update the buttons.
+        for(AbstractButton item : project_buttons) {
             item.setEnabled(project != null);
+        }
+        
+        if(project == null) {
+            for(AbstractButton item : machine_buttons) {
+                item.setEnabled(false);
+            }
         }
         
         // Update the frame layout.
