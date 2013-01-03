@@ -17,7 +17,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.Vector;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -420,9 +422,10 @@ public class ProjectWindow {
      */
     private void updateMachineList(String selection) {
         Set<String> machinenames = project.getMachineNames();
-        Object[] data = new Object[machinenames.size()];
+        SortedSet<String> machinenames_sort = new TreeSet<String>(machinenames);
+        Object[] data = new Object[machinenames_sort.size()];
         int index = 0;
-        for(String name : machinenames) {
+        for(String name : machinenames_sort) {
             data[index] = new MachineName(name);
             index++;
         }

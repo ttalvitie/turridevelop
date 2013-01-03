@@ -64,6 +64,20 @@ public class Vec2 {
         return Math.sqrt(x * x + y * y);
     }
     
+    /**
+     * Return the vector normalized.
+     * 
+     * @return The vector normalized. If the vector is zero, (1, 0) is returned.
+     */
+    public Vec2 normalized() {
+        double norm = getNorm();
+        if(norm == 0.0) {
+            return new Vec2(1.0, 0.0);
+        }
+        
+        return this.mul(1.0 / norm);
+    }
+    
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";

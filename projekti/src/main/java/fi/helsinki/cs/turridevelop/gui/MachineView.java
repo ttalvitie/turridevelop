@@ -4,6 +4,7 @@ package fi.helsinki.cs.turridevelop.gui;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.State;
+import fi.helsinki.cs.turridevelop.logic.Transition;
 import fi.helsinki.cs.turridevelop.util.Vec2;
 import java.awt.Color;
 import java.awt.Font;
@@ -15,6 +16,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -75,7 +79,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         addMouseListener(this);
         addMouseMotionListener(this);
         
-        font = new Font("SansSerif", Font.PLAIN, 20);
+        font = new Font("SansSerif", Font.PLAIN, 14);
         drag_button = MouseEvent.NOBUTTON;
     }
     
@@ -199,9 +203,29 @@ extends JPanel implements MouseListener, MouseMotionListener {
             getHeight() / 2 - (int)centerpos.y
         );
         
+        // Draw the states.
         for(String name : machine.getStateNames()) {
             State state = machine.getState(name);
             drawState(g, state);
+        }
+        
+        // For each state, draw the transitions grouped by destination.
+        for(String name : machine.getStateNames()) {
+            State state = machine.getState(name);
+            HashMap<State, ArrayList<Transition>> transitions =
+                new HashMap<State, ArrayList<Transition>>();
+            
+            for(Transition transition : state.getTransitions()) {
+                State destination = transition.getDestination();
+                if(!transitions.containsKey(destination)) {
+                    transitions.put(destination, new ArrayList<Transition>());
+                }
+                transitions.get(destination).add(transition);
+            }
+            
+            for(State dest : transitions.keySet()) {
+                drawTransitions(g, state, dest, transitions.get(dest));
+            }
         }
     }
     
@@ -277,5 +301,134 @@ extends JPanel implements MouseListener, MouseMotionListener {
         double x = pos.x - 0.5 * metrics.stringWidth(text); 
         double y = pos.y + 0.5 * (metrics.getAscent() - metrics.getDescent());
         g.drawString(text, (int)x, (int)y);
+    }
+    
+    /**
+     * Gets the starting and ending points of line between ellipses.
+     * 
+     * @param ellipse1 The starting ellipse.
+     * @param ellipse2 The ending ellipse.
+     * @return 2-element array of the starting and ending points of the line.
+     */
+    private Vec2[] getLineBetweenEllipses(
+        Ellipse2D ellipse1,
+        Ellipse2D ellipse2
+    ) {
+        Vec2 center1 = new Vec2(ellipse1.getCenterX(), ellipse1.getCenterY());
+        Vec2 center2 = new Vec2(ellipse2.getCenterX(), ellipse2.getCenterY());
+        
+        Vec2 diff = Vec2.sub(center2, center1).normalized();
+        
+        // Get the sizes of the ellipses.
+        double w1 = ellipse1.getWidth();
+        double h1 = ellipse1.getHeight();
+        double w2 = ellipse2.getWidth();
+        double h2 = ellipse2.getHeight();
+        
+        // Write the ellipses in form a(x-x0)^2 + b(y-y0)^2 = 1 where (x0, y0)
+        // is the center.
+        double a1 = 4.0 / (w1 * w1);
+        double b1 = 4.0 / (h1 * h1);
+        double a2 = 4.0 / (w2 * w2);
+        double b2 = 4.0 / (h2 * h2);
+        
+        // Solve t from equation a(dx*t)^2 + b(dy*t)^2 = 1 where dx, dy are
+        // diff's components, i.e. get the intersection of an ellipse and a line
+        // going through its center. For start choose the positive solution and
+        // for end the negative solution because diff runs from center1 to
+        // center2.
+        double dx2 = diff.x * diff.x;
+        double dy2 = diff.y * diff.y;
+        double t1 = 1.0 / Math.sqrt(a1 * dx2 + b1 * dy2);
+        double t2 = -1.0 / Math.sqrt(a2 * dx2 + b2 * dy2);
+        
+        // Now the endpoints are the intersection points center + t * diff.
+        Vec2[] ret = new Vec2[2];
+        ret[0] = Vec2.add(center1, diff.mul(t1));
+        ret[1] = Vec2.add(center2, diff.mul(t2));
+        return ret;
+    }
+    
+    /**
+     * Draws transitions between two states.
+     * 
+     * @param g The graphics context.
+     * @param from The source state of all transitions.
+     * @param to The destination state of all transitions.
+     * @param transitions List of the transitions.
+     */
+    private void drawTransitions(
+        Graphics2D g,
+        State from,
+        State to,
+        ArrayList<Transition> transitions
+    ) {
+        Vec2[] line = getLineBetweenEllipses(
+            getStateEllipse(from),
+            getStateEllipse(to)
+        );
+        
+        g.drawLine(
+            (int)line[0].x,
+            (int)line[0].y,
+            (int)line[1].x,
+            (int)line[1].y
+        );
+        
+        // Signify endpoint with a disc. TODO: create an arrow.
+        g.fillOval((int)line[1].x - 4, (int)line[1].y - 4, 8, 8);
+        
+        // Create the text for the transitions.
+        ArrayList<String> parts = new ArrayList<String>();
+        for(Transition transition : transitions) {
+            parts.add(getTransitionText(transition));
+        }
+        Collections.sort(parts);
+        StringBuilder text = new StringBuilder();
+        boolean first = true;
+        for(String part : parts) {
+            if(!first) {
+                text.append(", ");
+            }
+            text.append(part);
+            first = false;
+        }
+        
+        // Render the text.
+        Vec2 midpoint = Vec2.add(line[0], line[1]).mul(0.5);
+        g.fillOval((int)midpoint.x - 2, (int)midpoint.y - 2, 4, 4);
+        FontMetrics metrics = getFontMetrics(font);
+        double textx = midpoint.x + 4.0;
+        double textymid = 0.5 * (metrics.getAscent() - metrics.getDescent());
+        double texty = midpoint.y + textymid;
+        g.drawString(text.toString(), (float)textx, (float)texty);
+    }
+    
+    /**
+     * Gets the text used to describe transition.
+     * 
+     * @param transition The transition to describe.
+     * @return The string describing the transition.
+     */
+    private static String getTransitionText(Transition transition) {
+        String input = transition.getInputCharacters();
+        Character output = transition.getOutputCharacter();
+        char movement = 'X';
+        switch(transition.getMovement()) {
+            case -1:
+                movement = 'L';
+                break;
+            case 0:
+                movement = 'S';
+                break;
+            case 1:
+                movement = 'R';
+                break;
+        }
+        if(output == null) {
+            return input + " -> " + movement;
+        } else {
+            return input + " -> " + output + ", " + movement;
+        }
     }
 }
