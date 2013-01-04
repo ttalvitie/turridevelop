@@ -17,6 +17,7 @@ import java.util.Comparator;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -51,6 +52,11 @@ public class StateEditor extends JPanel {
     private JTextField namefield;
     
     /**
+     * The check box for setting the state accepting.
+     */
+    private JCheckBox accepting;
+    
+    /**
      * List of transitions.
      */
     JList transitionlist;
@@ -77,8 +83,7 @@ public class StateEditor extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1.0;
-                
-        // Name panel:
+        
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(new JLabel("Name: "));
@@ -102,14 +107,23 @@ public class StateEditor extends JPanel {
         });
         panel.add(namefield);
         
-        panel.setMaximumSize(new Dimension(
-            panel.getMaximumSize().width, panel.getPreferredSize().height
-        ));
-        
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
         add(panel, c);
+        c.gridwidth = 1;
+        
+        accepting = new JCheckBox("Accepting", state.isAccepting());
+        accepting.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                acceptingToggled();
+            }
+        });
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        add(accepting, c);
         c.gridwidth = 1;
 
         JButton button = new JButton("Remove");
@@ -120,7 +134,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 2;
         add(button, c);
         
         button = new JButton("Merge");
@@ -131,7 +145,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 1;
-        c.gridy = 1;
+        c.gridy = 2;
         add(button, c);
                 
         JPanel transitionpanel = new JPanel(new GridBagLayout());
@@ -184,7 +198,7 @@ public class StateEditor extends JPanel {
         transitionpanel.add(button, c);
         
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 3;
         c.gridwidth = 2;
         c.weighty = 1.0;
         add(transitionpanel, c);
@@ -283,6 +297,11 @@ public class StateEditor extends JPanel {
                 machineview.stateModified();
             }
         }
+    }
+    
+    private void acceptingToggled() {
+        state.setAccepting(accepting.isSelected());
+        machineview.stateModified();
     }
     
     private void addTransitionTo(State destination) {

@@ -359,6 +359,17 @@ extends JPanel implements MouseListener, MouseMotionListener {
         }
         g2.fill(ellipse);
         
+        // Draw smaller ellipses to mark accepting states.
+        if(state.isAccepting()) {
+            Ellipse2D.Double ellipse2 = new Ellipse2D.Double(
+                ellipse.getMinX() + 3,
+                ellipse.getMinY() + 3,
+                ellipse.getWidth() - 6,
+                ellipse.getHeight() - 6
+            );
+            g.draw(ellipse2);
+        }
+        
         g.draw(ellipse);
         drawCenteredText(g, state.getName(), pos);
     }
