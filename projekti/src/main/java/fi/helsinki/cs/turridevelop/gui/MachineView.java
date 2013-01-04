@@ -104,6 +104,18 @@ extends JPanel implements MouseListener, MouseMotionListener {
     }
     
     /**
+     * Notifies the view that a state of the machine has been modified.
+     */
+    public void stateModified() {
+        // Check if the active state has been removed.
+        if(machine.getState(active_state.getName()) != active_state) {
+            setActiveState(null);
+        }
+        
+        repaint();
+    }
+    
+    /**
      * Add new state to the machine.
      */
     public void addState() {
@@ -453,7 +465,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         // Update the editing panel.
         editpanel.removeAll();
         if(state != null) {
-            editpanel.add(new JButton("Editointipaneeli: " + state.getName()));
+            editpanel.add(new StateEditor(state, this));
         }
         
         editpanel.revalidate();
