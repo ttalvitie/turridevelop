@@ -73,6 +73,8 @@ public class TransitionEditor extends JDialog {
         
         closed_ok = false;
         
+        final char emptychar = '␣';
+        
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.insets = new Insets(4, 4, 4, 4);
@@ -86,6 +88,19 @@ public class TransitionEditor extends JDialog {
         c.gridy = 0;
         getContentPane().add(input_field, c);
         
+        JButton openbox_button = new JButton("" + emptychar);
+        openbox_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                input_field.setText(input_field.getText() + emptychar);
+            }
+        });
+        c.gridx = 2;
+        c.gridy = 0;
+        c.weightx = 0.0;
+        getContentPane().add(openbox_button, c);
+        c.weightx = 1.0;
+        
         c.gridx = 0;
         c.gridy = 1;
         getContentPane().add(new JLabel("Output character: "), c);
@@ -94,6 +109,19 @@ public class TransitionEditor extends JDialog {
         c.gridx = 1;
         c.gridy = 1;
         getContentPane().add(output_field, c);
+        
+        openbox_button = new JButton("" + emptychar);
+        openbox_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                output_field.setText("" + emptychar);
+            }
+        });
+        c.gridx = 2;
+        c.gridy = 1;
+        c.weightx = 0.0;
+        getContentPane().add(openbox_button, c);
+        c.weightx = 1.0;
         
         c.gridx = 0;
         c.gridy = 2;
@@ -108,6 +136,7 @@ public class TransitionEditor extends JDialog {
         radiobuttonpanel.add(radio_right);
         c.gridx = 1;
         c.gridy = 2;
+        c.gridwidth = 2;
         getContentPane().add(radiobuttonpanel, c);
         
         movement_group = new ButtonGroup();
@@ -135,7 +164,7 @@ public class TransitionEditor extends JDialog {
         buttonpanel.add(cancel);
         buttonpanel.add(ok);
         c.gridx = 0;
-        c.gridwidth = 2;
+        c.gridwidth = 3;
         c.gridy = 3;
         getContentPane().add(buttonpanel, c);
         

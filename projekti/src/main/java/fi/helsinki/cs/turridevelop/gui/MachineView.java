@@ -179,8 +179,8 @@ extends JPanel implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Vec2 pos = getMousePosition(e);
         Vec2 abspos = new Vec2(e.getX(), e.getY());
+        Vec2 pos = transformPosition(abspos);
         
         if(e.getButton() == MouseEvent.BUTTON1) {
             // If we hit a state, set it active or choose it depending on
@@ -202,6 +202,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
                 choice_handler = null;
                 repaint();
                 handler.stateChosen(clicked_state);
+                return;
             }
         }
         
@@ -212,7 +213,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
             // State drag
             if(drag_button == MouseEvent.BUTTON1 && active_state != null) {
                 drag_original = active_state.getPosition();
-                drag_start = pos;
+                drag_start = abspos;
             }
             
             // View drag
@@ -242,12 +243,12 @@ extends JPanel implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        Vec2 pos = getMousePosition(e);
         Vec2 abspos = new Vec2(e.getX(), e.getY());
+        Vec2 pos = transformPosition(abspos);
         
         // Update dragged object if there is an active drag.
         if(drag_button == MouseEvent.BUTTON1 && active_state != null) {
-            Vec2 newpos = Vec2.sub(Vec2.add(drag_original, pos), drag_start);
+            Vec2 newpos = Vec2.sub(Vec2.add(drag_original, abspos), drag_start);
             active_state.setPosition(newpos);
             repaint();
         }
@@ -303,15 +304,15 @@ extends JPanel implements MouseListener, MouseMotionListener {
     }
     
     /**
-     * Get the position of the mouse event in the coordinates of the diagram.
+     * Transform a position in the component coordinates to the diagram
+     * coordinates.
      * 
-     * @param e The mouse event.
+     * @param pos Position in component coordinates.
      * @return The position of the pointer in diagram coordinates.
      */
-    private Vec2 getMousePosition(MouseEvent e) {
-        Vec2 xy = new Vec2(e.getX(), e.getY());
+    private Vec2 transformPosition(Vec2 pos) {
         Vec2 halfsize = new Vec2(getWidth(), getHeight()).mul(0.5);
-        return Vec2.add(Vec2.sub(xy, halfsize), centerpos);
+        return Vec2.add(Vec2.sub(pos, halfsize), centerpos);
     }
     
     /**

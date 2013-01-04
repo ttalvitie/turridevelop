@@ -5,7 +5,6 @@ import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -18,15 +17,12 @@ import java.util.Comparator;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -314,7 +310,7 @@ public class StateEditor extends JPanel {
     /**
      * Update transition list to match the current transitions of the state.
      */
-    void updateTransitionList() {
+    private void updateTransitionList() {
         transitionlist_objs = new ArrayList<Transition>(state.getTransitions());
         
         // Sort the transitions by their text representations.
