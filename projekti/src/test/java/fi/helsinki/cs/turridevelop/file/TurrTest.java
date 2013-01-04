@@ -6,6 +6,7 @@ import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
+import fi.helsinki.cs.turridevelop.util.Vec2;
 import java.util.HashMap;
 import org.json.JSONObject;
 import org.junit.After;
@@ -48,13 +49,20 @@ public class TurrTest {
         Machine m2 = proj.addMachine("m2");
         
         State s11 = m1.addState("s11");
+        s11.setPosition(new Vec2(51.21, -563.2));
         State s12 = m1.addState("s12");
+        s12.setPosition(new Vec2(-3.0, 0.0));
         State s13 = m1.addState("s13");
+        s13.setPosition(new Vec2(1.3, 3.7));
         State s21 = m2.addState("s21");
+        s21.setPosition(new Vec2(-122.6231, 4.54325134));
         State s22 = m2.addState("s22");
+        s22.setPosition(new Vec2(0.0, 0.0));
         
         s13.setAccepting(true);
         s22.setAccepting(true);
+        s12.setJoint(true);
+        s13.setJoint(true);
         
         s11.addTransition(new Transition(s12, "abc", -1));
         s11.addTransition(new Transition(s13, "dxy", 'b', 0));
@@ -103,6 +111,14 @@ public class TurrTest {
     
     private static boolean statesEqual(State s1, State s2) {
         if(s1.isAccepting() != s2.isAccepting()) {
+            return false;
+        }
+        
+        if(s1.isJoint() != s2.isJoint()) {
+            return false;
+        }
+        
+        if(Vec2.sub(s1.getPosition(), s2.getPosition()).getNorm() != 0.0) {
             return false;
         }
         

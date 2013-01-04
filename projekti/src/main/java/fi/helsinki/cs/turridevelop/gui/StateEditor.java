@@ -57,6 +57,11 @@ public class StateEditor extends JPanel {
     private JCheckBox accepting;
     
     /**
+     * The check box for setting the state as a joint state.
+     */
+    private JCheckBox joint;
+    
+    /**
      * List of transitions.
      */
     JList transitionlist;
@@ -126,6 +131,19 @@ public class StateEditor extends JPanel {
         add(accepting, c);
         c.gridwidth = 1;
 
+        joint = new JCheckBox("Joint", state.isJoint());
+        joint.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jointToggled();
+            }
+        });
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        add(joint, c);
+        c.gridwidth = 1;
+
         JButton button = new JButton("Remove");
         button.addActionListener(new ActionListener() {
             @Override
@@ -134,7 +152,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 3;
         add(button, c);
         
         button = new JButton("Merge");
@@ -145,7 +163,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 1;
-        c.gridy = 2;
+        c.gridy = 3;
         add(button, c);
                 
         JPanel transitionpanel = new JPanel(new GridBagLayout());
@@ -198,7 +216,7 @@ public class StateEditor extends JPanel {
         transitionpanel.add(button, c);
         
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         c.gridwidth = 2;
         c.weighty = 1.0;
         add(transitionpanel, c);
@@ -301,6 +319,11 @@ public class StateEditor extends JPanel {
     
     private void acceptingToggled() {
         state.setAccepting(accepting.isSelected());
+        machineview.stateModified();
+    }
+    
+    private void jointToggled() {
+        state.setJoint(joint.isSelected());
         machineview.stateModified();
     }
     

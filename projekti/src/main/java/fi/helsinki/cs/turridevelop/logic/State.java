@@ -39,6 +39,11 @@ public class State implements ByNameStored {
     private boolean accepting;
     
     /**
+     * Is the state a joint state?
+     */
+    private boolean joint;
+    
+    /**
      * The position of the state in the diagram representation.
      */
     Vec2 pos;
@@ -46,7 +51,8 @@ public class State implements ByNameStored {
     /**
      * Constructs a Turing machine state.
      * 
-     * The state is set to non-accepting and placed in origin initially.
+     * The state is set to non-accepting, non-joint and placed in origin
+     * initially.
      * 
      * @param name The name of the state.
      * @param container Container containing the state that is notified on name
@@ -58,6 +64,7 @@ public class State implements ByNameStored {
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
         accepting = false;
+        joint = false;
         pos = new Vec2();
     }
     
@@ -78,6 +85,24 @@ public class State implements ByNameStored {
      */
     public void setAccepting(boolean accepting) {
         this.accepting = accepting;
+    }
+    
+    /**
+     * Tests whether the state is a joint state.
+     * 
+     * @return true if it is a joint state, false otherwise.
+     */
+    public boolean isJoint() {
+        return joint;
+    }
+    
+    /**
+     * Sets the state joint/non-joint.
+     * 
+     * @param joint true if the state should be a joint state, false otherwise.
+     */
+    public void setJoint(boolean joint) {
+        this.joint = joint;
     }
     
     /**
