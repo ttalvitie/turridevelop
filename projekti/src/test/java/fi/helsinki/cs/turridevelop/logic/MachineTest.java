@@ -87,4 +87,13 @@ public class MachineTest {
         assertEquals(mbsd, mac.getState("bsd"));
         assertEquals("bsd", mbsd.getName());
     }
+    
+    @Test
+    public void testRemoveStateRemovesTransitions() throws NameInUseException {
+        State a = mac.addState("a");
+        State b = mac.addState("b");
+        a.addTransition(new Transition(b, "x", 'y', 0));
+        mac.removeState("b");
+        assertEquals(0, a.getTransitions().size());
+    }
 }

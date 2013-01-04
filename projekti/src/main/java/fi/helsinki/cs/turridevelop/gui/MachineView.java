@@ -108,7 +108,10 @@ extends JPanel implements MouseListener, MouseMotionListener {
      */
     public void stateModified() {
         // Check if the active state has been removed.
-        if(machine.getState(active_state.getName()) != active_state) {
+        if(
+            active_state != null &&
+            machine.getState(active_state.getName()) != active_state
+        ) {
             setActiveState(null);
         }
         

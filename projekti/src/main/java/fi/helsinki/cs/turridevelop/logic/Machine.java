@@ -3,6 +3,7 @@ package fi.helsinki.cs.turridevelop.logic;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.util.ByNameContainer;
 import fi.helsinki.cs.turridevelop.util.ByNameStored;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -93,5 +94,31 @@ public class Machine implements ByNameStored {
         State state = new State(name, states);
         states.add(state);
         return state;
+    }
+    
+    /**
+     * Removes a state from the machine, if exists. Removes also all transitions
+     * that have the state as a destination.
+     * 
+     * @param name Name of the state.
+     */
+    public void removeState(String name) {
+        State removestate = states.get(name);
+        if(removestate == null) {
+            return;
+        }
+        for(String statename : states.getNames()) {
+            State state = states.get(statename);
+            ArrayList<Transition> removes = new ArrayList<Transition>();
+            for(Transition transition : state.getTransitions()) {
+                if(transition.getDestination() == removestate) {
+                    removes.add(transition);
+                }
+            }
+            for(Transition transition : removes) {
+                state.removeTransition(transition);
+            }
+        }
+        states.remove(name);
     }
 }

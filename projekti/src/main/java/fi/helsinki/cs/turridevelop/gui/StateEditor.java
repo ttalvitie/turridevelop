@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -49,8 +50,24 @@ public class StateEditor extends JPanel {
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
-        // Name panel:
+        // Buttons.
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        
+        JButton button = new JButton("Remove state");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeStateClicked();
+            }
+        });
+        panel.add(button);
+        panel.add(new JButton("xasd"));
+        
+        add(panel);
+        
+        // Name panel:
+        panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(new JLabel("Name: "));
         
@@ -99,6 +116,11 @@ public class StateEditor extends JPanel {
                 JOptionPane.ERROR_MESSAGE
             );
         }
+        machineview.stateModified();
+    }
+    
+    private void removeStateClicked() {
+        machineview.getMachine().removeState(state.getName());
         machineview.stateModified();
     }
 }
