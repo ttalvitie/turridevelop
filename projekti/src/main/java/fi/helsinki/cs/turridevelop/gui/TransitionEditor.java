@@ -11,10 +11,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -36,17 +38,22 @@ public class TransitionEditor extends JDialog {
     /**
      * Radio button for 'left' movement.
      */
-    private JRadioButton left;
+    private JRadioButton radio_left;
     
     /**
      * Radio button for 'stay' movement.
      */
-    private JRadioButton stay;
+    private JRadioButton radio_stay;
     
     /**
      * Radio button for 'right' movement.
      */
-    private JRadioButton right;
+    private JRadioButton radio_right;
+    
+    /**
+     * The button group for movement.
+     */
+    private ButtonGroup movement_group;
     
     /**
      * Was the editor closed with the OK button?
@@ -93,20 +100,21 @@ public class TransitionEditor extends JDialog {
         getContentPane().add(new JLabel("Movement: "), c);
         
         JPanel radiobuttonpanel = new JPanel(new FlowLayout());
-        left = new JRadioButton("Left");
-        stay = new JRadioButton("Stay");
-        right = new JRadioButton("Right");
-        radiobuttonpanel.add(left);
-        radiobuttonpanel.add(stay, true);
-        radiobuttonpanel.add(right);
+        radio_left = new JRadioButton("Left");
+        radio_stay = new JRadioButton("Stay");
+        radio_right = new JRadioButton("Right");
+        radiobuttonpanel.add(radio_left);
+        radiobuttonpanel.add(radio_stay);
+        radiobuttonpanel.add(radio_right);
         c.gridx = 1;
         c.gridy = 2;
         getContentPane().add(radiobuttonpanel, c);
         
-        ButtonGroup group = new ButtonGroup();
-        group.add(left);
-        group.add(stay);
-        group.add(right);
+        movement_group = new ButtonGroup();
+        movement_group.add(radio_left);
+        movement_group.add(radio_stay);
+        movement_group.add(radio_right);
+        movement_group.setSelected(radio_stay.getModel(), true);
         
         JPanel buttonpanel = new JPanel(new FlowLayout());
         JButton cancel = new JButton("Cancel");
@@ -120,8 +128,7 @@ public class TransitionEditor extends JDialog {
         ok.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                closed_ok = true;
-                dispose();
+                okClicked();
             }
         });
         
@@ -135,6 +142,54 @@ public class TransitionEditor extends JDialog {
         pack();
     }
     
+    private void okClicked() {
+        String error = null;
+        if(input_field.getText().length() == 0) {
+            error = "The transition does not have any input characters.";
+        }
+        if(output_field.getText().length() > 1) {
+            error = "Output should be empty or one character.";
+        }
+        
+        if(error != null) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Could not save transition:\n" + error,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        
+        closed_ok = true;
+        dispose();
+    }
+    
+    /**
+     * Get the default values of the fields from a transition.
+     * 
+     * @param transition The transition from which to get the default values.
+     */
+    public void defaultsFromTransition(Transition transition) {
+        input_field.setText(transition.getInputCharacters());
+        if(transition.getOutputCharacter() == null) {
+            output_field.setText("");
+        } else {
+            output_field.setText("" + transition.getOutputCharacter());
+        }
+        switch(transition.getMovement()) {
+            case -1:
+                movement_group.setSelected(radio_left.getModel(), true);
+                break;
+            case 0:
+                movement_group.setSelected(radio_stay.getModel(), true);
+                break;
+            case 1:
+                movement_group.setSelected(radio_right.getModel(), true);
+                break;
+        }
+    }
+    
     /**
      * Construct a transition from the settings specified in the editor.
      * 
@@ -142,7 +197,7 @@ public class TransitionEditor extends JDialog {
      * @return The transition or null if user didn't close the window with OK
      * button.
      */
-    Transition getTransition(State destination) {
+    public Transition getTransition(State destination) {
         if(!closed_ok) {
             return null;
         }
@@ -153,10 +208,10 @@ public class TransitionEditor extends JDialog {
         }
         
         int movement = -1;
-        if(stay.isSelected()) {
+        if(radio_stay.isSelected()) {
             movement = 0;
         }
-        if(right.isSelected()) {
+        if(radio_right.isSelected()) {
             movement = 1;
         }
         

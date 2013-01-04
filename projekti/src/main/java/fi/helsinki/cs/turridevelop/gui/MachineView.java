@@ -454,7 +454,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         // Create the text for the transitions.
         ArrayList<String> parts = new ArrayList<String>();
         for(Transition transition : transitions) {
-            parts.add(getTransitionText(transition));
+            parts.add(Util.getTransitionText(transition, false));
         }
         Collections.sort(parts);
         StringBuilder text = new StringBuilder();
@@ -475,34 +475,6 @@ extends JPanel implements MouseListener, MouseMotionListener {
         double textymid = 0.5 * (metrics.getAscent() - metrics.getDescent());
         double texty = midpoint.y + textymid;
         g.drawString(text.toString(), (float)textx, (float)texty);
-    }
-    
-    /**
-     * Gets the text used to describe transition.
-     * 
-     * @param transition The transition to describe.
-     * @return The string describing the transition.
-     */
-    private static String getTransitionText(Transition transition) {
-        String input = transition.getInputCharacters();
-        Character output = transition.getOutputCharacter();
-        char movement = 'X';
-        switch(transition.getMovement()) {
-            case -1:
-                movement = 'L';
-                break;
-            case 0:
-                movement = 'S';
-                break;
-            case 1:
-                movement = 'R';
-                break;
-        }
-        if(output == null) {
-            return input + " -> " + movement;
-        } else {
-            return input + " -> " + output + ", " + movement;
-        }
     }
     
     /**
