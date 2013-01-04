@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -33,6 +34,11 @@ extends JPanel implements MouseListener, MouseMotionListener {
      * Machine being edited.
      */
     private Machine machine;
+    
+    /**
+     * The frame containing the view.
+     */
+    private JFrame frame;
     
     /**
      * Font used in the panel.
@@ -68,20 +74,33 @@ extends JPanel implements MouseListener, MouseMotionListener {
     private Vec2 drag_start;
     
     /**
-     * The panel to put state editor into.
+     * The panel to put the state editor into.
      */
     private JPanel editpanel;
+    
+    /**
+     * If the view is in state choice mode, the handler for notifying of the
+     * choice. Otherwise null.
+     */
+    private StateChoiceHandler choice_handler;
+    
+    /**
+     * If choice_handler != null, the text used to describe the choice.
+     */
+    private String choice_text;
     
     /**
      * Constructs a MachineView panel.
      * 
      * @param machine The machine to be edited in the view.
      * @param editpanel The panel to put the editing panel into.
+     * @param frame The frame containing the view.
      */
-    public MachineView(Machine machine, JPanel editpanel) {
+    public MachineView(Machine machine, JPanel editpanel, JFrame frame) {
         this.machine = machine;
         centerpos = new Vec2();
         this.editpanel = editpanel;
+        this.frame = frame;
         
         setBackground(Color.white);
         
@@ -107,6 +126,9 @@ extends JPanel implements MouseListener, MouseMotionListener {
      * Notifies the view that a state of the machine has been modified.
      */
     public void stateModified() {
+        // If changes were made in states, choice mode is probably invalid.
+        choice_handler = null;
+        
         // Check if the active state has been removed.
         if(
             active_state != null &&
@@ -114,6 +136,20 @@ extends JPanel implements MouseListener, MouseMotionListener {
         ) {
             setActiveState(null);
         }
+        
+        repaint();
+    }
+    
+    /**
+     * Puts the view into mode for choosing a state.
+     * 
+     * @param handler Handler that is notified if a choice is made or choosing
+     * is abandoned.
+     * @param text Text used to describe the choice for the user.
+     */
+    public void startStateChoice(StateChoiceHandler handler, String text) {
+        choice_handler = handler;
+        choice_text = text;
         
         repaint();
     }
@@ -147,19 +183,25 @@ extends JPanel implements MouseListener, MouseMotionListener {
         Vec2 abspos = new Vec2(e.getX(), e.getY());
         
         if(e.getButton() == MouseEvent.BUTTON1) {
-            // If we hit a state, set it active.
-            boolean found = false;
+            // If we hit a state, set it active or choose it depending on
+            // whether we are in choice mode or not.
+            State clicked_state = null;
             for(String statename : machine.getStateNames()) {
                 State state = machine.getState(statename);
                 if(getStateEllipse(state).contains(pos.x, pos.y)) {
-                    setActiveState(state);
-                    found = true;
+                    clicked_state = state;
                 }
             }
-
-            // Otherwise, deactivate state.
-            if(!found) {
-                setActiveState(null);
+            
+            if(choice_handler == null) {
+                // No choice mode, set as active.
+                setActiveState(clicked_state);
+            } else {
+                // Choice mode, notify and end choice mode.
+                StateChoiceHandler handler = choice_handler;
+                choice_handler = null;
+                repaint();
+                handler.stateChosen(clicked_state);
             }
         }
         
@@ -218,9 +260,9 @@ extends JPanel implements MouseListener, MouseMotionListener {
     @Override
     public void paintComponent(Graphics outg) {
         super.paintComponent(outg);
+        outg.setFont(font);
         
         Graphics2D g = (Graphics2D) outg.create();
-        g.setFont(font);
         
         g.translate(
             getWidth() / 2 - (int)centerpos.x,
@@ -250,6 +292,13 @@ extends JPanel implements MouseListener, MouseMotionListener {
             for(State dest : transitions.keySet()) {
                 drawTransitions(g, state, dest, transitions.get(dest));
             }
+        }
+        
+        // Draw the choice text if we are in choice mode.
+        if(choice_handler != null) {
+            Graphics2D g2 = (Graphics2D) outg.create();
+            g2.setColor(Color.RED);
+            g2.drawString(choice_text, 5, 5 + getFontMetrics(font).getAscent());
         }
     }
     
@@ -412,7 +461,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         boolean first = true;
         for(String part : parts) {
             if(!first) {
-                text.append(", ");
+                text.append("; ");
             }
             text.append(part);
             first = false;
@@ -468,7 +517,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         // Update the editing panel.
         editpanel.removeAll();
         if(state != null) {
-            editpanel.add(new StateEditor(state, this));
+            editpanel.add(new StateEditor(state, this, frame));
         }
         
         editpanel.revalidate();

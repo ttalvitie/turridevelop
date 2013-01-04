@@ -355,7 +355,7 @@ public class ProjectWindow {
         editpanel.removeAll();
         machineview = null;
         if(machine != null) {
-            machineview = new MachineView(machine, editpanel);
+            machineview = new MachineView(machine, editpanel, frame);
             machinepanel.add(machineview);
         }
         
@@ -410,7 +410,7 @@ public class ProjectWindow {
             
             editpanel = new JPanel();
             editpanel.setLayout(new BorderLayout());
-            editpanel.setMinimumSize(new Dimension(100, 100));
+            editpanel.setMinimumSize(new Dimension(200, 200));
             editpanel.setPreferredSize(new Dimension(300, 300));
             
             JSplitPane leftsplit = new JSplitPane(
