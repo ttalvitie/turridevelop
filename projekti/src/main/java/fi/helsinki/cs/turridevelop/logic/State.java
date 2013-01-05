@@ -39,9 +39,10 @@ public class State implements ByNameStored {
     private boolean accepting;
     
     /**
-     * Is the state a joint state?
+     * The name of the submachine of the state, i.e. the machine that will be
+     * run when simulation enters the state.
      */
-    private boolean joint;
+    private String submachine;
     
     /**
      * The position of the state in the diagram representation.
@@ -64,7 +65,6 @@ public class State implements ByNameStored {
         transitions = new HashSet<Transition>();
         transitions_by_input = new HashMap<Character, Transition>();
         accepting = false;
-        joint = false;
         pos = new Vec2();
     }
     
@@ -88,21 +88,22 @@ public class State implements ByNameStored {
     }
     
     /**
-     * Tests whether the state is a joint state.
+     * Gets the submachine of the state.
      * 
-     * @return true if it is a joint state, false otherwise.
+     * @return The submachine or null if this state has no submachine to run.
      */
-    public boolean isJoint() {
-        return joint;
+    public String getSubmachine() {
+        return submachine;
     }
     
     /**
-     * Sets the state joint/non-joint.
+     * Sets the submachine of the state.
      * 
-     * @param joint true if the state should be a joint state, false otherwise.
+     * @param machine The name of the machine or null if there should be no
+     * submachines.
      */
-    public void setJoint(boolean joint) {
-        this.joint = joint;
+    public void setSubmachine(String machine) {
+        submachine = machine;
     }
     
     /**

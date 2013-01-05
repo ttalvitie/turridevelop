@@ -61,8 +61,6 @@ public class TurrTest {
         
         s13.setAccepting(true);
         s22.setAccepting(true);
-        s12.setJoint(true);
-        s13.setJoint(true);
         
         s11.addTransition(new Transition(s12, "abc", -1));
         s11.addTransition(new Transition(s13, "dxy", 'b', 0));
@@ -111,10 +109,6 @@ public class TurrTest {
     
     private static boolean statesEqual(State s1, State s2) {
         if(s1.isAccepting() != s2.isAccepting()) {
-            return false;
-        }
-        
-        if(s1.isJoint() != s2.isJoint()) {
             return false;
         }
         

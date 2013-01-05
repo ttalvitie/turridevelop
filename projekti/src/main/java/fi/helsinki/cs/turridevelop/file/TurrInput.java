@@ -150,10 +150,6 @@ public class TurrInput {
                 state.setAccepting(true);
             }
             
-            if(state_json.get("joint").equals(true)) {
-                state.setJoint(true);
-            }
-            
             double x = state_json.getDouble("x");
             double y = state_json.getDouble("y");
             state.setPosition(new Vec2(x, y));

@@ -88,7 +88,6 @@ public class TurrOutput {
                 state_json.put("transitions", transitions_json);
                 
                 state_json.put("accepting", state.isAccepting());
-                state_json.put("joint", state.isJoint());
                 
                 state_json.put("x", state.getPosition().x);
                 state_json.put("y", state.getPosition().y);

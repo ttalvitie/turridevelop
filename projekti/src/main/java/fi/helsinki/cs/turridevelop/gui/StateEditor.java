@@ -57,9 +57,14 @@ public class StateEditor extends JPanel {
     private JCheckBox accepting;
     
     /**
-     * The check box for setting the state as a joint state.
+     * The check box for selecting whether the state has a submachine.
      */
-    private JCheckBox joint;
+    private JCheckBox submachine_check;
+    
+    /**
+     * The text field for setting the submachine name.
+     */
+    private JTextField submachine_name;
     
     /**
      * List of transitions.
@@ -131,19 +136,55 @@ public class StateEditor extends JPanel {
         add(accepting, c);
         c.gridwidth = 1;
 
-        joint = new JCheckBox("Joint", state.isJoint());
-        joint.addActionListener(new ActionListener() {
+        submachine_check = new JCheckBox(
+            "Has a submachine",
+            state.getSubmachine() != null
+        );
+        submachine_check.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                jointToggled();
+                submachineToggled();
             }
         });
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 2;
-        add(joint, c);
+        add(submachine_check, c);
         c.gridwidth = 1;
+        
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.add(new JLabel("Submachine name: "));
+        
+        submachine_name = new JTextField();
+        submachine_name.setEnabled(state.getSubmachine() != null);
+        if(state.getSubmachine() != null) {
+            submachine_name.setText(state.getSubmachine());
+        }
+        submachine_name.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                submachineNameChanged();
+            }
+        });
+        submachine_name.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
 
+            @Override
+            public void focusLost(FocusEvent e) {
+                submachineNameChanged();
+            }
+        });
+        panel.add(submachine_name);
+        
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        add(panel, c);
+        c.gridwidth = 1;
+        
         JButton button = new JButton("Remove");
         button.addActionListener(new ActionListener() {
             @Override
@@ -152,7 +193,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         add(button, c);
         
         button = new JButton("Merge");
@@ -163,7 +204,7 @@ public class StateEditor extends JPanel {
             }
         });
         c.gridx = 1;
-        c.gridy = 3;
+        c.gridy = 4;
         add(button, c);
                 
         JPanel transitionpanel = new JPanel(new GridBagLayout());
@@ -216,7 +257,7 @@ public class StateEditor extends JPanel {
         transitionpanel.add(button, c);
         
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 2;
         c.weighty = 1.0;
         add(transitionpanel, c);
@@ -322,8 +363,20 @@ public class StateEditor extends JPanel {
         machineview.stateModified();
     }
     
-    private void jointToggled() {
-        state.setJoint(joint.isSelected());
+    private void submachineToggled() {
+        if(submachine_check.isSelected()) {
+            state.setSubmachine("");
+            submachine_name.setEnabled(true);
+        } else {
+            state.setSubmachine(null);
+            submachine_name.setEnabled(false);
+        }
+        submachine_name.setText("");
+        machineview.stateModified();
+    }
+    
+    private void submachineNameChanged() {
+        state.setSubmachine(submachine_name.getText());
         machineview.stateModified();
     }
     

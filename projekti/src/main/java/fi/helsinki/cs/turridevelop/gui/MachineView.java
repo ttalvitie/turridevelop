@@ -350,14 +350,6 @@ extends JPanel implements MouseListener, MouseMotionListener {
         Vec2 pos = state.getPosition();
         Ellipse2D.Double ellipse = getStateEllipse(state);
         
-        // Draw a "shadow" ellipse to mark joint states.
-        if(state.isJoint()) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.translate(3, 2);
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.fill(ellipse);
-        }
-        
         // Hilight active state.
         Graphics2D g2 = (Graphics2D) g.create();
         if(state == active_state) {
