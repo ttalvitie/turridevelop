@@ -150,6 +150,11 @@ public class TurrInput {
                 state.setAccepting(true);
             }
             
+            Object submachine_json = state_json.get("submachine");
+            if(submachine_json != JSONObject.NULL) {
+                state.setSubmachine((String) submachine_json);
+            }
+            
             double x = state_json.getDouble("x");
             double y = state_json.getDouble("y");
             state.setPosition(new Vec2(x, y));

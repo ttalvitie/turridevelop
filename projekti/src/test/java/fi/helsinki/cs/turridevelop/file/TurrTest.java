@@ -62,6 +62,9 @@ public class TurrTest {
         s13.setAccepting(true);
         s22.setAccepting(true);
         
+        s11.setSubmachine("m2");
+        s13.setSubmachine("m2");
+        
         s11.addTransition(new Transition(s12, "abc", -1));
         s11.addTransition(new Transition(s13, "dxy", 'b', 0));
         s12.addTransition(new Transition(s11, "xyz", 'x', 1));
@@ -110,6 +113,18 @@ public class TurrTest {
     private static boolean statesEqual(State s1, State s2) {
         if(s1.isAccepting() != s2.isAccepting()) {
             return false;
+        }
+        
+        String sub1 = s1.getSubmachine();
+        String sub2 = s2.getSubmachine();
+        if(sub1 == null) {
+            if(sub2 != null) {
+                return false;
+            }
+        } else {
+            if(!sub1.equals(sub2)) {
+                return false;
+            }
         }
         
         if(Vec2.sub(s1.getPosition(), s2.getPosition()).getNorm() != 0.0) {

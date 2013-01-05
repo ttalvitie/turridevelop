@@ -89,6 +89,13 @@ public class TurrOutput {
                 
                 state_json.put("accepting", state.isAccepting());
                 
+                String submachine = state.getSubmachine();
+                if(submachine == null) {
+                    state_json.put("submachine", JSONObject.NULL);
+                } else {
+                    state_json.put("submachine", submachine);
+                }
+                
                 state_json.put("x", state.getPosition().x);
                 state_json.put("y", state.getPosition().y);
                 

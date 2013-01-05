@@ -19,7 +19,6 @@ JSON-tiedostoon:
 \textbf{Turingin kone}, juuriolio:
 \begin{itemize}
 \item states : mappi tilojen nimiltä \textbf{tiloille}
-\item submachines : mappi alikoneiden nimiltä \textbf{alikoneille} (toteutetaan
 myöhemmin)
 \end{itemize}
 
@@ -27,9 +26,8 @@ myöhemmin)
 \begin{itemize}
 \item transitions : taulukko \textbf{tilasiirtymiä}
 \item accepting : onko tila hyväksyvä
-\item joint : onko tila liitostila, ts. näkyy konetta alikoneinaan käyttäviin
-koneisiin
-\item start : onko tila alkutila
+\item submachine : tilaan tultaessa ajettava projektin toisen koneen nimi tai
+null jos ei ajeta mitään
 \item x : x-koordinaatti esityksessä kaaviona
 \item y : y-koordinaatti esityksessä kaaviona
 \end{itemize}
@@ -43,15 +41,4 @@ kirjoita mitään.
 \item move : siirtymä kirjoittamisen jälkeen, ''L'' = vasemmalle, ''R'' =
 oikealle, ''S'' = pysy paikallaan (''Stay'').
 \end{itemize}
-
-\textbf{Alikone}, olio:
-\begin{itemize}
-\item machine : alikone jota kutsutaan (jos arvo ''nimi'' niin koneen
-tiedostonnimi ''nimi.turr'')
-\item statemapping : mappi tämän koneen tilojen nimiltä alikoneena käytettävän
-koneen liitostilojen nimille, kertoo mihin alikoneen tilaan tila samastetaan
-\item x : x-koordinaatti esityksessä kaaviona
-\item y : y-koordinaatti esityksessä kaaviona
-\end{itemize}
-
 \end{document}
