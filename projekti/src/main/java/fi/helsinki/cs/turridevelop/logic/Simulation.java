@@ -70,7 +70,7 @@ public class Simulation {
         machines = new Stack<Machine>();
         states.push(state);
         machines.push(machine);
-        goToState(false);
+        intoState();
     }
     
     /**
@@ -127,9 +127,10 @@ public class Simulation {
      * that, steps into and out of submachines such that next step starts again
      * with a transition.
      * 
-     * @throws SimulationException if a submachine was not found or a submachine
-     * did not have a start state. Leaves the simulation in an inconsistent
-     * state, should not be used afterwards.
+     * @throws SimulationException if a submachine was not found, a submachine
+     * did not have a start state or an infinite submachine recursion was found.
+     * Leaves the simulation in an inconsistent state, should not be used
+     * afterwards.
      */
     public void step() throws SimulationException {
         if(status == SimulationStatus.RUNNING) {
@@ -152,58 +153,63 @@ public class Simulation {
             
             states.pop();
             states.push(transition.getDestination());
-            goToState(false);
+            intoState();
         }
     }
     
     /**
-     * Handle everything that must be done when entering the state on the top
-     * of the stack: go to submachines or if accepting, go back to calling
-     * machine or accept.
+     * Handle everything that must be done after entering the state on the top
+     * of the stack, i.e. calling submachines and checking for accepted state.
      * 
-     * @param returned Set to true if the states submachine was just run and
-     * now we should only check whether it is accepting.
-     * @throws SimulationException if a submachine was not found or a submachine
-     * did not have a start state.
+     * @throws SimulationException if a submachine was not found, a submachine
+     * did not have a start state or an infinite submachine recursion was found.
+     * Leaves the simulation in an inconsistent state, should not be used
+     * afterwards.
      */
-    private void goToState(boolean returned) throws SimulationException {
-        State state = states.peek();
-        
-        // If this is not a return and the state has a submachine, go to it.
-        String submachine_name = state.getSubmachine();
-        if(!returned && submachine_name != null) {
+    private void intoState() throws SimulationException {
+        // While the state on the top has a submachine, go into it.
+        int depth = 0;
+        while(states.peek().getSubmachine() != null) {
+            depth++;
+            // If we have gone deeper than the number of machines in the
+            // project, we are stuck in an infinite loop.
+            if(depth > project.getMachineNames().size()) {
+                throw new SimulationException(
+                    "The project has an infinite submachine loop containing " +
+                    "the start state of machine '" + machines.peek().getName() +
+                    "'"
+                );
+            }
+            
+            String submachine_name = states.peek().getSubmachine();
             Machine submachine = project.getMachine(submachine_name);
             if(submachine == null) {
-                // TODO: better reporting.
                 throw new SimulationException(
                     "The project does not have machine '" + submachine_name +
                     "':\nReferred by state '" + getState().getName() + "' of " +
                     "machine '" + getMachine().getName() + "'."
                 );
             }
-            State start_state = submachine.getState("start");
-            if(start_state == null) {
-                // TODO: better reporting.
+            State state = submachine.getState("start");
+            if(state == null) {
                 throw new SimulationException(
                     "Machine '" + submachine_name + "' does not have a state " +
                     "named 'start'."
                 );
             }
-            states.push(start_state);
+            
+            states.push(state);
             machines.push(submachine);
-            goToState(false);
-            return;
         }
         
-        // If we ended up in an accepting state, accept or if we are in a
-        // submachine, return.
-        if(state.isAccepting()) {
+        // While the state on the top is accepting, return from it.
+        while(states.peek().isAccepting()) {
             if(states.size() == 1) {
-               status = SimulationStatus.ACCEPTED;
+                status = SimulationStatus.ACCEPTED;
+                return;
             } else {
-               states.pop();
-               machines.pop();
-               goToState(true);
+                states.pop();
+                machines.pop();
             }
         }
     }
@@ -213,9 +219,10 @@ public class Simulation {
      * 
      * Note that if the simulation might not terminate.
      * 
-     * @throws SimulationException if a submachine was not found or a submachine
-     * did not have a start state. Leaves the simulation in an inconsistent
-     * state, should not be used afterwards.
+     * @throws SimulationException if a submachine was not found, a submachine
+     * did not have a start state or an infinite submachine recursion was found.
+     * Leaves the simulation in an inconsistent state, should not be used
+     * afterwards.
      */
     public void run() throws SimulationException {
         while(getStatus() == SimulationStatus.RUNNING) {

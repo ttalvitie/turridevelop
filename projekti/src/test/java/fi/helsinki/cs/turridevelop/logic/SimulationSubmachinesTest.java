@@ -152,4 +152,31 @@ public class SimulationSubmachinesTest {
         assertEquals(mac, sim.getMachine());
         assertEquals("casd", sim.getTape().getContents());
     }
+    
+    @Test(expected=SimulationException.class)
+    public void testSingleInfiniteRecursionThrows() throws SimulationException {
+        x.setSubmachine("mac");
+        
+        Simulation sim = new Simulation(proj, "mac", new Tape("aasd"));
+        sim.run();
+    }
+    @Test(expected=SimulationException.class)
+    public void testDualInfiniteRecursionThrows() throws SimulationException {
+        x.setSubmachine("win");
+        a.setSubmachine("lin");
+        m.setSubmachine("win");
+        
+        Simulation sim = new Simulation(proj, "mac", new Tape("aasd"));
+        sim.run();
+    }
+    
+    @Test(expected=SimulationException.class)
+    public void testThreeInfiniteRecursionThrows() throws SimulationException {
+        x.setSubmachine("win");
+        a.setSubmachine("lin");
+        m.setSubmachine("mac");
+        
+        Simulation sim = new Simulation(proj, "mac", new Tape("aasd"));
+        sim.run();
+    }
 }
