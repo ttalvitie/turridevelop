@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.helsinki.cs.turridevelop.exceptions;
 
 /**
- *
- * @author topi
+ * Exception thrown on errors when using filesystem.
  */
 public class FilesystemException extends Exception {
 

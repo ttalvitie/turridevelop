@@ -45,7 +45,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * Window where a single project is modified.
  */
-public class ProjectWindow {
+public class ProjectWindow implements RunPanelCloseHandler {
     /**
      * The frame of the window.
      */
@@ -85,6 +85,16 @@ public class ProjectWindow {
      * The editing panel area. Valid if project != null.
      */
     private JPanel editpanel;
+    
+    /**
+     * The run panel area. Valid if project != null.
+     */
+    private JPanel runpanel;
+    
+    /**
+     * The main splitter of the window.
+     */
+    private JSplitPane split;
     
     public ProjectWindow() {
         frame = new JFrame();
@@ -163,6 +173,15 @@ public class ProjectWindow {
         });
         menu.add(item);
         
+        item = new JMenuItem("Run");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runProjectClicked();
+            }
+        });
+        menu.add(item);
+        
         menubar.add(menu);
         
         // Machine-menu:
@@ -210,6 +229,13 @@ public class ProjectWindow {
         frame.setVisible(true);
     }
     
+    @Override
+    public void runPanelClosed(RunPanel panel) {
+        runpanel.removeAll();
+        split.revalidate();
+        split.repaint();
+    }
+    
     private void newProjectClicked() {
         changeProject(new Project());
     }
@@ -232,7 +258,6 @@ public class ProjectWindow {
                 "Error",
                 JOptionPane.ERROR_MESSAGE
             );
-            return;
         }
     }
     
@@ -339,6 +364,13 @@ public class ProjectWindow {
         updateMachineList(null);
     }
     
+    private void runProjectClicked() {
+        runpanel.removeAll();
+        runpanel.add(new RunPanel(project, this));
+        split.revalidate();
+        split.repaint();
+    }
+    
     void newStateClicked() {
         machineview.addState();
     }
@@ -417,13 +449,21 @@ public class ProjectWindow {
                 JSplitPane.VERTICAL_SPLIT, machinelist_scroll, editpanel
             );
             
+            JPanel rightpanel = new JPanel();
+            rightpanel.setLayout(new BorderLayout());
+            
             machinepanel = new JPanel();
             machinepanel.setLayout(new BorderLayout());
             machinepanel.setMinimumSize(new Dimension(300, 300));
             machinepanel.setPreferredSize(new Dimension(600, 600));
+            rightpanel.add(machinepanel);
             
-            JSplitPane split = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, leftsplit, machinepanel
+            runpanel = new JPanel();
+            runpanel.setLayout(new BorderLayout());
+            rightpanel.add(runpanel, BorderLayout.SOUTH);
+            
+            split = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, leftsplit, rightpanel
             );
             frame.getContentPane().add(split);
             updateMachineList(null);
@@ -453,6 +493,11 @@ public class ProjectWindow {
             machinelist.clearSelection();
         } else {
             machinelist.setSelectedValue(new MachineName(selection), true);
+        }
+        
+        // If there is a run panel, notify it.
+        if(runpanel.getComponentCount() == 1) {
+            ((RunPanel) runpanel.getComponent(0)).machinesChanged();
         }
     }
 }
