@@ -114,6 +114,15 @@ public class Simulation {
     }
     
     /**
+     * Gets the tape the simulation operates on.
+     * 
+     * @return The tape that the simulation operates on.
+     */
+    public Tape getTape() {
+        return head.getTape();
+    }
+    
+    /**
      * If the simulation is still running, runs it one transition forward. After
      * that, steps into and out of submachines such that next step starts again
      * with a transition.
