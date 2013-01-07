@@ -42,7 +42,7 @@ public class Simulation {
      * @param tape The input tape to simulate on.
      * 
      * @throws SimulationException if the project doesn't have the machine or
-     * the machine does not have a start state.
+     * the machine does not have a start state or a submachine error occured.
      */
     public Simulation(
         Project project,
@@ -127,10 +127,7 @@ public class Simulation {
      * that, steps into and out of submachines such that next step starts again
      * with a transition.
      * 
-     * @throws SimulationException if a submachine was not found, a submachine
-     * did not have a start state or an infinite submachine recursion was found.
-     * Leaves the simulation in an inconsistent state, should not be used
-     * afterwards.
+     * @throws SimulationException on submachine errors.
      */
     public void step() throws SimulationException {
         if(status == SimulationStatus.RUNNING) {
@@ -161,10 +158,7 @@ public class Simulation {
      * Handle everything that must be done after entering the state on the top
      * of the stack, i.e. calling submachines and checking for accepted state.
      * 
-     * @throws SimulationException if a submachine was not found, a submachine
-     * did not have a start state or an infinite submachine recursion was found.
-     * Leaves the simulation in an inconsistent state, should not be used
-     * afterwards.
+     * @throws SimulationException on submachine errors.
      */
     private void intoState() throws SimulationException {
         // While the state on the top has a submachine, go into it.
@@ -219,10 +213,7 @@ public class Simulation {
      * 
      * Note that if the simulation might not terminate.
      * 
-     * @throws SimulationException if a submachine was not found, a submachine
-     * did not have a start state or an infinite submachine recursion was found.
-     * Leaves the simulation in an inconsistent state, should not be used
-     * afterwards.
+     * @throws SimulationException on submachine errors.
      */
     public void run() throws SimulationException {
         while(getStatus() == SimulationStatus.RUNNING) {

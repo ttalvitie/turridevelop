@@ -1,8 +1,9 @@
 package fi.helsinki.cs.turridevelop.exceptions;
 
 /**
- * Exception thrown by logic.Simulation when the project is inconsistent and
- * cannot be simulated further.
+ * Exception thrown by logic.Simulation when the start machine or start state
+ * is not found or there is a submachine error, i.e. unknown machine as
+ * submachine, missing start state on a submachine or infinite submachine loop.
  */
 public class SimulationException extends Exception {
 
