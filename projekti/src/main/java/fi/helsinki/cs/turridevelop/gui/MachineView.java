@@ -5,11 +5,13 @@ import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
 import fi.helsinki.cs.turridevelop.util.Vec2;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -263,6 +265,13 @@ extends JPanel implements MouseListener, MouseMotionListener {
         outg.setFont(font);
         
         Graphics2D g = (Graphics2D) outg.create();
+        g.setRenderingHint(
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON
+        );
+        g.setStroke(
+            new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+        );
         
         g.translate(
             getWidth() / 2 - (int)centerpos.x,

@@ -5,7 +5,9 @@ import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.Simulation;
 import fi.helsinki.cs.turridevelop.logic.Tape;
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -22,6 +24,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * Panel for simulating Turing machines.
@@ -63,6 +67,11 @@ public class RunPanel extends JPanel {
     private JLabel status;
     
     /**
+     * The text area for the tape view.
+     */
+    private JTextArea tape_textarea;
+    
+    /**
      * Constructs a run panel for a project.
      * 
      * @param project The project to run.
@@ -82,6 +91,7 @@ public class RunPanel extends JPanel {
         
         JButton button;
         
+        c.gridx = 0;
         c.gridy = 0;
         
         button = new JButton("Close");
@@ -91,15 +101,15 @@ public class RunPanel extends JPanel {
                 closeClicked();
             }
         });
-        c.gridx = 0;
         add(button, c);
-        
         c.gridx++;
+        
         add(new JLabel("Machine to run: "), c);
+        c.gridx++;
         
         machine_combo = new JComboBox();
-        c.gridx++;
         add(machine_combo, c);
+        c.gridx++;
         
         button = new JButton("Start");
         button.addActionListener(new ActionListener() {
@@ -108,8 +118,8 @@ public class RunPanel extends JPanel {
                 startClicked();
             }
         });
-        c.gridx++;
         add(button, c);
+        c.gridx++;
         
         button = new JButton("Step");
         button.addActionListener(new ActionListener() {
@@ -119,18 +129,35 @@ public class RunPanel extends JPanel {
             }
         });
         simulation_buttons.add(button);
-        c.gridx++;
         add(button, c);
+        c.gridx++;
         
         status = new JLabel();
-        c.gridx++;
         c.weightx = 1.0;
         add(status, c);
         c.weightx = 0.0;
+        c.gridx++;
+        
+        c.gridy++;
+        c.gridx = 0;
+        
+        tape_textarea = new JTextArea(2, 30);
+        tape_textarea.setEditable(false);
+        tape_textarea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JScrollPane(
+            tape_textarea,
+            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+            JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
+        ));
+        c.gridwidth = 6;
+        add(panel, c);
+        c.gridwidth = 1;
         
         machinesChanged();
         updateButtons();
         updateStatus();
+        updateTapeView();
     }
     
     /**
@@ -177,6 +204,7 @@ public class RunPanel extends JPanel {
         }
         updateButtons();
         updateStatus();
+        updateTapeView();
     }
     
     private void stepClicked() {
@@ -188,6 +216,7 @@ public class RunPanel extends JPanel {
             }
         }
         updateStatus();
+        updateTapeView();
     }
     
     /**
@@ -232,6 +261,33 @@ public class RunPanel extends JPanel {
     }
     
     /**
+     * Update the tape view to show the current status of the view.
+     */
+    private void updateTapeView() {
+        StringBuilder text = new StringBuilder();
+        int pos = 0;
+        if(simulation != null) {
+            pos = simulation.getHead().getPosition();
+            for(int i = 0; i < pos; i++) {
+                text.append(' ');
+            }
+            text.append('▼');
+        }
+        text.append("\n");
+        String contents = tape.getContents();
+        for(int i = 0; i < Math.max(contents.length(), pos) + 300; i++) {
+            char c = tape.getCharacterAt(i);
+            if(c == '\n') {
+                c = '�';
+            }
+            text.append(c);
+        }
+        tape_textarea.setText(text.toString());
+        tape_textarea.setCaretPosition(pos);
+    }
+    
+    
+    /**
      * Shows error message based on exception and reset simulation.
      * 
      * @param e The simulation exception to use for the error message.
@@ -246,5 +302,6 @@ public class RunPanel extends JPanel {
         simulation = null;
         updateButtons();
         updateStatus();
+        updateTapeView();
     }
 }
