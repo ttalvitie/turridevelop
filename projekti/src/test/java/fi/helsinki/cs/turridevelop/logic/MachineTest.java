@@ -1,19 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.helsinki.cs.turridevelop.logic;
 
-import fi.helsinki.cs.turridevelop.logic.Machine;
-import fi.helsinki.cs.turridevelop.logic.State;
-import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

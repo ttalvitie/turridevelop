@@ -1,4 +1,3 @@
-
 package fi.helsinki.cs.turridevelop.gui;
 
 import fi.helsinki.cs.turridevelop.logic.Transition;
