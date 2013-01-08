@@ -93,15 +93,41 @@ public class Tape {
      * after it are empty characters.
      */
     public String getContents() {
-        // First remove the remaining empty characters from the explicitly
-        // stored part.
+        removeEmptyCharacters();
+        
+        return tape.toString();
+    }
+    
+    /**
+     * Get the length of getContents().
+     * 
+     * @return The length of string returned by getContents().
+     */
+    public int getContentsLength() {
+        removeEmptyCharacters();
+        
+        return tape.length();
+    }
+    
+    /**
+     * Remove empty characters from the end of 'tape'.
+     */
+    private void removeEmptyCharacters() {
         while(
             tape.length() != 0 &&
             tape.charAt(tape.length() - 1) == getEmptyCharacter()
         ) {
             tape.deleteCharAt(tape.length() - 1);
         }
-        
-        return tape.toString();
+    }
+    
+    /**
+     * Set the contents of the tape.
+     * 
+     * @param contents The new content of the tape. The characters after the end
+     * of the string will be set to the empty character.
+     */
+    public void setContents(String contents) {
+        tape = new StringBuilder(contents);
     }
 }

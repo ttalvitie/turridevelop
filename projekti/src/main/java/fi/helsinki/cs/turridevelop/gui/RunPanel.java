@@ -4,6 +4,7 @@ import fi.helsinki.cs.turridevelop.exceptions.SimulationException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.Simulation;
+import fi.helsinki.cs.turridevelop.logic.SimulationStatus;
 import fi.helsinki.cs.turridevelop.logic.Tape;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -26,6 +27,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 
 /**
  * Panel for simulating Turing machines.
@@ -70,6 +73,16 @@ public class RunPanel extends JPanel {
      * The text area for the tape view.
      */
     private JTextArea tape_textarea;
+    
+    /**
+     * The toggle button used to continuously run the project.
+     */
+    private JToggleButton run_button;
+    
+    /**
+     * Has the user been warned for this run that the tape is very long.
+     */
+    private boolean run_warned;
     
     /**
      * Constructs a run panel for a project.
@@ -132,6 +145,17 @@ public class RunPanel extends JPanel {
         add(button, c);
         c.gridx++;
         
+        run_button = new JToggleButton("Run");
+        run_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runToggled();
+            }
+        });
+        simulation_buttons.add(run_button);
+        add(run_button, c);
+        c.gridx++;
+        
         status = new JLabel();
         c.weightx = 1.0;
         add(status, c);
@@ -141,17 +165,49 @@ public class RunPanel extends JPanel {
         c.gridy++;
         c.gridx = 0;
         
+        JPanel tapepanel = new JPanel(new GridBagLayout());
+        tapepanel.setBorder(BorderFactory.createTitledBorder("Tape"));
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.fill = GridBagConstraints.HORIZONTAL;
+        c2.weighty = 1.0;
+        
+        button = new JButton("Clear");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearTapeClicked();
+            }
+        });
+        c2.gridx = 0;
+        c2.gridy = 0;
+        tapepanel.add(button, c2);
+        
+        button = new JButton("Edit");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editTapeClicked();
+            }
+        });
+        c2.gridy = 1;
+        tapepanel.add(button, c2);
+        
         tape_textarea = new JTextArea(2, 30);
         tape_textarea.setEditable(false);
         tape_textarea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(
+        
+        c2.gridx = 1;
+        c2.gridy = 0;
+        c2.gridheight = 2;
+        c2.weightx = 1.0;
+        tapepanel.add(new JScrollPane(
             tape_textarea,
             JScrollPane.VERTICAL_SCROLLBAR_NEVER,
             JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-        ));
-        c.gridwidth = 6;
-        add(panel, c);
+        ), c2);
+        
+        c.gridwidth = 7;
+        add(tapepanel, c);
         c.gridwidth = 1;
         
         machinesChanged();
@@ -188,6 +244,8 @@ public class RunPanel extends JPanel {
     }
     
     private void startClicked() {
+        run_warned = false;
+        
         MachineName selection = (MachineName) machine_combo.getSelectedItem();
         Machine machine = null;
         simulation = null;
@@ -208,15 +266,79 @@ public class RunPanel extends JPanel {
     }
     
     private void stepClicked() {
+        step(1);
+    }
+    
+    private void step(int times) {
         if(simulation != null) {
+            if(
+                !run_warned &&
+                run_button.isSelected() &&
+                simulation.getHead().getPosition() > 50000
+            ) {
+                int ret = JOptionPane.showConfirmDialog(
+                    this,
+                    "The tape is getting very long, are you sure you want to" +
+                    "continue running?",
+                    "Tape length warning",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+                );
+                if(ret == JOptionPane.YES_OPTION) {
+                    run_warned = true;
+                } else {
+                    run_button.setSelected(false);
+                    return;
+                }
+            }
             try {
-                simulation.step();
+                for(int i = 0; i < times; i++) {
+                    simulation.step();
+                }
             } catch(SimulationException e) {
                 fail(e);
             }
         }
         updateStatus();
         updateTapeView();
+    }
+    
+    private void runToggled() {
+        run_warned = false;
+        if(run_button.isSelected()) {
+            new Runnable() {
+                @Override
+                public void run() {
+                    if(
+                        run_button.isSelected() &&
+                        simulation != null &&
+                        simulation.getStatus() == SimulationStatus.RUNNING
+                    ) {
+                        step(10000); 
+                        SwingUtilities.invokeLater(this);
+                    } else {
+                        run_button.setSelected(false);
+                    }
+                }
+            }.run();
+        }
+    }
+    
+    private void clearTapeClicked() {
+        tape.setContents("");
+        updateTapeView();
+    }
+    
+    private void editTapeClicked() {
+        String contents = JOptionPane.showInputDialog(
+            this,
+            "New tape content:",
+            tape.getContents() + tape.getEmptyCharacter()
+        );
+        if(contents != null) {
+            tape.setContents(contents);
+            updateTapeView();
+        }
     }
     
     /**
@@ -283,7 +405,20 @@ public class RunPanel extends JPanel {
             text.append(c);
         }
         tape_textarea.setText(text.toString());
-        tape_textarea.setCaretPosition(pos);
+        
+        // Move the caret so that the position where the head is is visible.
+        tape_textarea.setCaretPosition(
+            Math.min(Math.max(2 * pos + 2 - 5, pos + 2), text.length() - 1)
+        );
+        final int pos2 = pos;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                tape_textarea.setCaretPosition(
+                    Math.min(2 * pos2 + 7, tape_textarea.getText().length())
+                );
+            }
+        });
     }
     
     
