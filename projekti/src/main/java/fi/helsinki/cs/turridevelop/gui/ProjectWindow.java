@@ -8,6 +8,7 @@ import fi.helsinki.cs.turridevelop.file.TurrOutput;
 import fi.helsinki.cs.turridevelop.logic.Machine;
 import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
+import fi.helsinki.cs.turridevelop.util.Vec2;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -272,7 +273,21 @@ public class ProjectWindow implements RunPanelCloseHandler {
         }
         
         try {
-            project.addMachine(name);
+            Machine machine = project.addMachine(name);
+            
+            // Update machine list and set the new machine as current.
+            updateMachineList(name);
+            
+            // Add start and accept states.
+            try {
+                State start = machine.addState("start");
+                start.setPosition(new Vec2(-100, 0));
+                State accept = machine.addState("accept");
+                accept.setPosition(new Vec2(100, 0));
+                accept.setAccepting(true);
+            } catch(NameInUseException e) {
+                throw new RuntimeException();
+            }
         } catch(NameInUseException e) {
             JOptionPane.showMessageDialog(
                 frame,
@@ -281,12 +296,7 @@ public class ProjectWindow implements RunPanelCloseHandler {
                 "Error",
                 JOptionPane.ERROR_MESSAGE
             );
-            return;
         }
-        
-        // Adding the machine succeeded, update machine list and set the new
-        // machine as current.
-        updateMachineList(name);
     }
     
     private void renameMachineClicked() {

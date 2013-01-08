@@ -93,13 +93,13 @@ public class Util {
         // Handle the case when the ellipses are exactly equal separately.
         if(ellipse1.equals(ellipse2)) {
             Vec2 start = getEllipseHalflineIntersection(
-                ellipse1, new Vec2(1.0, -2.0)
-            );
-            Vec2 end = getEllipseHalflineIntersection(
                 ellipse1, new Vec2(-1.0, -2.0)
             );
-            Vec2 control1 = Vec2.add(start, new Vec2(40, -60.0));
-            Vec2 control2 = Vec2.add(end, new Vec2(-40, -60.0));
+            Vec2 end = getEllipseHalflineIntersection(
+                ellipse1, new Vec2(1.0, -2.0)
+            );
+            Vec2 control1 = Vec2.add(start, new Vec2(-40, -60.0));
+            Vec2 control2 = Vec2.add(end, new Vec2(40, -60.0));
             
             Vec2[] ret = new Vec2[4];
             ret[0] = start;
@@ -115,10 +115,10 @@ public class Util {
         
         // Put the both control points a little distance away from the segment.
         Vec2 control1 = Vec2.add(
-            Vec2.add(center1.mul(0.75), center2.mul(0.25)), diffnormal.mul(40.0)
+            Vec2.add(center1.mul(0.7), center2.mul(0.3)), diffnormal.mul(-40.0)
         );
         Vec2 control2 = Vec2.add(
-            Vec2.add(center1.mul(0.25), center2.mul(0.75)), diffnormal.mul(40.0)
+            Vec2.add(center1.mul(0.3), center2.mul(0.7)), diffnormal.mul(-40.0)
         );
         
         // Put the start and end points to the intersections of the tangent line
