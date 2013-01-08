@@ -425,8 +425,8 @@ extends JPanel implements MouseListener, MouseMotionListener {
         );
         g.draw(bezier);
         
-        // Signify endpoint with a disc. TODO: create an arrow.
-        g.fillOval((int)points[3].x - 4, (int)points[3].y - 4, 8, 8);
+        // Signify endpoint with an arrow.
+        g.fill(Util.getArrowEnd(points[3], Vec2.sub(points[3], points[2])));
         
         // Create the text for the transitions.
         ArrayList<String> parts = new ArrayList<String>();

@@ -443,17 +443,28 @@ public class ProjectWindow implements RunPanelCloseHandler {
                     newMachineClicked();
                 }
             });
-            c.gridwidth = 2;
             machineeditor.add(button, c);
-            c.gridwidth = 1;
-            c.gridx = 0;
-            c.gridy++;
+            c.gridx++;
             
             button = new JButton("Remove");
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     removeMachineClicked();
+                }
+            });
+            button.setEnabled(false);
+            machine_buttons.add(button);
+            machineeditor.add(button, c);
+            
+            c.gridy++;
+            c.gridx = 0;
+            
+            button = new JButton("Rename");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    renameMachineClicked();
                 }
             });
             button.setEnabled(false);

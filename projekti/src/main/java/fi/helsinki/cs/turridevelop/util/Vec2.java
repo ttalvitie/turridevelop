@@ -86,6 +86,18 @@ public class Vec2 {
         return new Vec2(-y, x);
     }
     
+    /**
+     * Rotate the vector by given angle.
+     * 
+     * @return The angle to rotate.
+     * @return The rotated vector.
+     */
+    public Vec2 rotate(double angle) {
+        double c = Math.cos(angle);
+        double s = Math.sin(angle);
+        return new Vec2(x * c - y * s, x * s + y * c);
+    }
+    
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";

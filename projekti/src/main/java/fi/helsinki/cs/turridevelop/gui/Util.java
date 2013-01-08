@@ -2,7 +2,9 @@ package fi.helsinki.cs.turridevelop.gui;
 
 import fi.helsinki.cs.turridevelop.logic.Transition;
 import fi.helsinki.cs.turridevelop.util.Vec2;
+import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 
 /**
  * GUI utilities.
@@ -135,4 +137,26 @@ public class Util {
         return ret;
     }
     
+    /**
+     * Get the end of an arrow as a path.
+     * 
+     * @param point The point the arrow is pointing to.
+     * @param direction The direction the arrow is pointing to.
+     * @return The path for the arrow end.
+     */
+    public static Path2D.Double getArrowEnd(Vec2 point, Vec2 direction) {
+        direction = direction.normalized();
+        Vec2 corner1 =
+            Vec2.add(point, direction.rotate(Math.PI * 0.86).mul(8.0));
+        Vec2 corner2 =
+            Vec2.add(point, direction.rotate(-Math.PI * 0.86).mul(8.0));
+        
+        Path2D.Double path = new Path2D.Double();
+        path.moveTo(point.x, point.y);
+        path.lineTo(corner1.x, corner1.y);
+        path.lineTo(corner2.x, corner2.y);
+        path.closePath();
+        
+        return path;
+    }
 }
