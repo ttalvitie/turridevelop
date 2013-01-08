@@ -14,6 +14,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import javax.swing.AbstractButton;
@@ -125,6 +126,7 @@ public class RunPanel extends JPanel {
         c.gridx++;
         
         button = new JButton("Start");
+        button.setMnemonic(KeyEvent.VK_A);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -135,6 +137,7 @@ public class RunPanel extends JPanel {
         c.gridx++;
         
         button = new JButton("Step");
+        button.setMnemonic(KeyEvent.VK_S);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -146,6 +149,7 @@ public class RunPanel extends JPanel {
         c.gridx++;
         
         run_button = new JToggleButton("Run");
+        run_button.setMnemonic(KeyEvent.VK_R);
         run_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -172,6 +176,7 @@ public class RunPanel extends JPanel {
         c2.weighty = 1.0;
         
         button = new JButton("Clear");
+        button.setMnemonic(KeyEvent.VK_C);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -278,7 +283,7 @@ public class RunPanel extends JPanel {
             ) {
                 int ret = JOptionPane.showConfirmDialog(
                     this,
-                    "The tape is getting very long, are you sure you want to" +
+                    "The tape is getting very long, are you sure you want to " +
                     "continue running?",
                     "Tape length warning",
                     JOptionPane.YES_NO_OPTION,
