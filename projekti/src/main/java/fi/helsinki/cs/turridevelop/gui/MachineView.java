@@ -182,7 +182,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
     @Override
     public void mousePressed(MouseEvent e) {
         Vec2 abspos = new Vec2(e.getX(), e.getY());
-        Vec2 pos = transformPosition(abspos);
+        Vec2 pos = transformComponentPositionToDiagram(abspos);
         
         if(e.getButton() == MouseEvent.BUTTON1) {
             // If we hit a state, set it active or choose it depending on
@@ -246,7 +246,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent e) {
         Vec2 abspos = new Vec2(e.getX(), e.getY());
-        Vec2 pos = transformPosition(abspos);
+        Vec2 pos = transformComponentPositionToDiagram(abspos);
         
         // Update dragged object if there is an active drag.
         if(drag_button == MouseEvent.BUTTON1 && active_state != null) {
@@ -304,6 +304,14 @@ extends JPanel implements MouseListener, MouseMotionListener {
             }
         }
         
+        /**
+         * Draw the arrows showing the states outside the view.
+         */
+        for(String name : machine.getStateNames()) {
+            State state = machine.getState(name);
+            drawStateArrow(g, state);
+        }
+        
         // Draw the choice text if we are in choice mode.
         if(choice_handler != null) {
             Graphics2D g2 = (Graphics2D) outg.create();
@@ -317,13 +325,24 @@ extends JPanel implements MouseListener, MouseMotionListener {
      * coordinates.
      * 
      * @param pos Position in component coordinates.
-     * @return The position of the pointer in diagram coordinates.
+     * @return The position in diagram coordinates.
      */
-    private Vec2 transformPosition(Vec2 pos) {
+    private Vec2 transformComponentPositionToDiagram(Vec2 pos) {
         Vec2 halfsize = new Vec2(getWidth(), getHeight()).mul(0.5);
         return Vec2.add(Vec2.sub(pos, halfsize), centerpos);
     }
     
+    /**
+     * Transform a position in the diagram coordinates to the component
+     * coordinates.
+     * 
+     * @param pos Position in diagram coordinates.
+     * @return The position in component coordinates.
+     */
+    private Vec2 transformDiagramPositionToComponent(Vec2 pos) {
+        Vec2 halfsize = new Vec2(getWidth(), getHeight()).mul(0.5);
+        return Vec2.add(Vec2.sub(pos, centerpos), halfsize);
+    }
     /**
      * Gets the ellipse that should be drawn around the state name.
      * 
@@ -355,6 +374,12 @@ extends JPanel implements MouseListener, MouseMotionListener {
         );
     }
     
+    /**
+     * Draw a state.
+     * 
+     * @param g The graphics context to use.
+     * @param state The state to draw.
+     */
     private void drawState(Graphics2D g, State state) {
         Vec2 pos = state.getPosition();
         Ellipse2D.Double ellipse = getStateEllipse(state);
@@ -381,6 +406,60 @@ extends JPanel implements MouseListener, MouseMotionListener {
         
         g.draw(ellipse);
         drawCenteredText(g, state.getName(), pos);
+    }
+    
+    /**
+     * If the state is outside visible area, draw an arrow pointing towards it.
+     * 
+     * @param g The graphics context to use.
+     * @param state The state to draw.
+     */
+    private void drawStateArrow(Graphics2D g, State state) {
+        Vec2 pos = state.getPosition();
+        Vec2 diagpos = transformDiagramPositionToComponent(pos);
+        
+        if(
+            diagpos.x < 0 || diagpos.x >= getWidth() ||
+            diagpos.y < 0 || diagpos.y >= getHeight()
+        ) {
+            Vec2 min = transformComponentPositionToDiagram(new Vec2());
+            Vec2 max = transformComponentPositionToDiagram(
+                new Vec2(getWidth(), getHeight())
+            );
+            
+            Vec2 arrowpos = new Vec2(
+                Math.min(Math.max(pos.x, min.x), max.x),
+                Math.min(Math.max(pos.y, min.y), max.y)
+            );
+            Vec2 arrowdir = new Vec2(1, 0);
+            if(diagpos.x < 0) {
+                if(diagpos.y < 0) {
+                    arrowdir = new Vec2(-1.0, -1.0);
+                } else if(diagpos.y >= getHeight()) {
+                    arrowdir = new Vec2(-1.0, 1.0);
+                } else {
+                    arrowdir = new Vec2(-1.0, 0.0);
+                }
+            } else if(diagpos.x >= getWidth()) {
+                if(diagpos.y < 0) {
+                    arrowdir = new Vec2(1.0, -1.0);
+                } else if(diagpos.y >= getHeight()) {
+                    arrowdir = new Vec2(1.0, 1.0);
+                } else {
+                    arrowdir = new Vec2(1.0, 0.0);
+                }
+            } else {
+                if(diagpos.y < 0) {
+                    arrowdir = new Vec2(0.0, -1.0);
+                } else {
+                    arrowdir = new Vec2(0.0, 1.0);
+                }
+            }
+            
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(Color.RED);
+            g2.fill(Util.getArrowEnd(arrowpos, arrowdir, 12.0));
+        }
     }
     
     /**
@@ -425,8 +504,10 @@ extends JPanel implements MouseListener, MouseMotionListener {
         );
         g.draw(bezier);
         
-        // Signify endpoint with an arrow.
-        g.fill(Util.getArrowEnd(points[3], Vec2.sub(points[3], points[2])));
+        // Show the endpoint with an arrow.
+        g.fill(
+            Util.getArrowEnd(points[3], Vec2.sub(points[3], points[2]), 8.0)
+        );
         
         // Create the text for the transitions.
         ArrayList<String> parts = new ArrayList<String>();

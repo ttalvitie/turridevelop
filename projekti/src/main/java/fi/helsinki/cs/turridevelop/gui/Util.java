@@ -142,14 +142,17 @@ public class Util {
      * 
      * @param point The point the arrow is pointing to.
      * @param direction The direction the arrow is pointing to.
+     * @param size Size of the arrow.
      * @return The path for the arrow end.
      */
-    public static Path2D.Double getArrowEnd(Vec2 point, Vec2 direction) {
+    public static Path2D.Double getArrowEnd(
+        Vec2 point, Vec2 direction, double size
+    ) {
         direction = direction.normalized();
         Vec2 corner1 =
-            Vec2.add(point, direction.rotate(Math.PI * 0.86).mul(8.0));
+            Vec2.add(point, direction.rotate(Math.PI * 0.86).mul(size));
         Vec2 corner2 =
-            Vec2.add(point, direction.rotate(-Math.PI * 0.86).mul(8.0));
+            Vec2.add(point, direction.rotate(-Math.PI * 0.86).mul(size));
         
         Path2D.Double path = new Path2D.Double();
         path.moveTo(point.x, point.y);
