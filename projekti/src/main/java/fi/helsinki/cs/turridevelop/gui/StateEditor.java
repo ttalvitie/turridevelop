@@ -13,6 +13,7 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -24,6 +25,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicListUI;
 
 /**
  * Editing panel for a state.
@@ -74,6 +78,12 @@ public class StateEditor extends JPanel {
      * The list of the transitions referred by transitionlist in the same order.
      */
     ArrayList<Transition> transitionlist_objs;
+    
+    /**
+     * The list of buttons that should be disabled when there is no transition
+     * selected.
+     */
+    ArrayList<AbstractButton> transition_buttons;
     
     /**
      * Constructs a state editor.
@@ -193,23 +203,25 @@ public class StateEditor extends JPanel {
         });
         c.gridx = 0;
         c.gridy = 4;
+        c.gridwidth = 2;
         add(button, c);
-        
-        button = new JButton("Merge");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mergeStateClicked();
-            }
-        });
-        c.gridx = 1;
-        c.gridy = 4;
-        add(button, c);
+        c.gridwidth = 1;
                 
         JPanel transitionpanel = new JPanel(new GridBagLayout());
         GridBagConstraints c2;
         
+        transition_buttons = new ArrayList<AbstractButton>();
+        
         transitionlist = new JList();
+        transitionlist.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                boolean enable = transitionlist.getSelectedValue() != null;
+                for(AbstractButton button : transition_buttons) {
+                    button.setEnabled(enable);
+                }
+            }
+        });
         JScrollPane transitionscroll = new JScrollPane(transitionlist);
         transitionscroll.setBorder(
             BorderFactory.createTitledBorder("Transitions")
@@ -231,7 +243,9 @@ public class StateEditor extends JPanel {
         });
         c.gridx = 0;
         c.gridy = 1;
+        c.gridwidth = 2;
         transitionpanel.add(button, c);
+        c.gridwidth = 1;
 
         button = new JButton("Remove");
         button.addActionListener(new ActionListener() {
@@ -240,8 +254,9 @@ public class StateEditor extends JPanel {
                 removeTransitionClicked();
             }
         });
-        c.gridx = 1;
-        c.gridy = 1;
+        c.gridx = 0;
+        c.gridy = 2;
+        transition_buttons.add(button);
         transitionpanel.add(button, c);
         
         button = new JButton("Modify");
@@ -251,8 +266,9 @@ public class StateEditor extends JPanel {
                 modifyTransitionClicked();
             }
         });
-        c.gridx = 0;
+        c.gridx = 1;
         c.gridy = 2;
+        transition_buttons.add(button);
         transitionpanel.add(button, c);
         
         c.gridx = 0;
@@ -262,6 +278,7 @@ public class StateEditor extends JPanel {
         add(transitionpanel, c);
         
         updateTransitionList();
+        transitionlist.getListSelectionListeners()[0].valueChanged(null);
     }
     
     private void nameChanged() {
@@ -286,10 +303,6 @@ public class StateEditor extends JPanel {
     private void removeStateClicked() {
         machineview.getMachine().removeState(state.getName());
         machineview.stateModified();
-    }
-    
-    private void mergeStateClicked() {
-        
     }
     
     private void newTransitionClicked() {

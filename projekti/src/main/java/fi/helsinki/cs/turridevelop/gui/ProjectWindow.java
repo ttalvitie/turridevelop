@@ -11,6 +11,8 @@ import fi.helsinki.cs.turridevelop.logic.State;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -108,8 +110,8 @@ public class ProjectWindow implements RunPanelCloseHandler {
         project_buttons = new ArrayList<AbstractButton>();
         machine_buttons = new ArrayList<AbstractButton>();
         
-        // File-menu:
-        menu = new JMenu("File");
+        // Project-menu:
+        menu = new JMenu("Project");
         
         item = new JMenuItem("New project");
         item.addActionListener(new ActionListener() {
@@ -148,30 +150,7 @@ public class ProjectWindow implements RunPanelCloseHandler {
         });
         project_buttons.add(item);
         menu.add(item);
-        
-        item = new JMenuItem("Quit");
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                quitClicked();
-            }
-        });
-        menu.add(item);
-        
-        menubar.add(menu);
-        
-        // Project-menu:
-        menu = new JMenu("Project");
-        project_buttons.add(menu);
-        
-        item = new JMenuItem("New machine");
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newMachineClicked();
-            }
-        });
-        menu.add(item);
+        menu.addSeparator();
         
         item = new JMenuItem("Run");
         item.addActionListener(new ActionListener() {
@@ -180,37 +159,15 @@ public class ProjectWindow implements RunPanelCloseHandler {
                 runProjectClicked();
             }
         });
+        project_buttons.add(item);
         menu.add(item);
+        menu.addSeparator();
         
-        menubar.add(menu);
-        
-        // Machine-menu:
-        menu = new JMenu("Machine");
-        machine_buttons.add(menu);
-        
-        item = new JMenuItem("Rename machine");
+        item = new JMenuItem("Quit");
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                renameMachineClicked();
-            }
-        });
-        menu.add(item);
-        
-        item = new JMenuItem("Remove machine");
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                removeMachineClicked();
-            }
-        });
-        menu.add(item);
-        
-        item = new JMenuItem("New state");
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newStateClicked();
+                quitClicked();
             }
         });
         menu.add(item);
@@ -425,6 +382,13 @@ public class ProjectWindow implements RunPanelCloseHandler {
         frame.getContentPane().removeAll();
         if(project != null) {
             // Machine list on the left, the machine panel on the right.
+            JPanel machineeditor = new JPanel(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            c.fill = GridBagConstraints.BOTH;
+            c.weightx = 1.0;
+            c.gridx = 0;
+            c.gridy = 0;
+            
             machinelist = new JList();
             machinelist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             machinelist.addListSelectionListener(new ListSelectionListener() {
@@ -439,6 +403,48 @@ public class ProjectWindow implements RunPanelCloseHandler {
             machinelist_scroll.setPreferredSize(new Dimension(200, 200));
             Border border = BorderFactory.createTitledBorder("Machines");
             machinelist_scroll.setBorder(border);
+            c.weighty = 1.0;
+            c.gridwidth = 2;
+            machineeditor.add(machinelist_scroll, c);
+            c.weighty = 0.0;
+            c.gridwidth = 1;
+            c.gridy++;
+            
+            JButton button = new JButton("New");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    newMachineClicked();
+                }
+            });
+            c.gridwidth = 2;
+            machineeditor.add(button, c);
+            c.gridwidth = 1;
+            c.gridx = 0;
+            c.gridy++;
+            
+            button = new JButton("Remove");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    removeMachineClicked();
+                }
+            });
+            button.setEnabled(false);
+            machine_buttons.add(button);
+            machineeditor.add(button, c);
+            c.gridx++;
+            
+            button = new JButton("New state");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    newStateClicked();
+                }
+            });
+            button.setEnabled(false);
+            machine_buttons.add(button);
+            machineeditor.add(button, c);
             
             editpanel = new JPanel();
             editpanel.setLayout(new BorderLayout());
@@ -446,7 +452,7 @@ public class ProjectWindow implements RunPanelCloseHandler {
             editpanel.setPreferredSize(new Dimension(300, 300));
             
             JSplitPane leftsplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT, machinelist_scroll, editpanel
+                JSplitPane.VERTICAL_SPLIT, machineeditor, editpanel
             );
             
             JPanel rightpanel = new JPanel();

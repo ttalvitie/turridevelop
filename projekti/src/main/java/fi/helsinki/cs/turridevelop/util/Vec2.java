@@ -77,6 +77,15 @@ public class Vec2 {
         return this.mul(1.0 / norm);
     }
     
+    /**
+     * Rotate the vector by 90 degrees counterclockwise.
+     * 
+     * @return The vector rotated by 90 degrees counterclockwise.
+     */
+    public Vec2 rotate90() {
+        return new Vec2(-y, x);
+    }
+    
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";
