@@ -16,6 +16,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
@@ -317,8 +318,18 @@ public class ProjectWindow implements RunPanelCloseHandler {
     }
     
     private void removeMachineClicked() {
-        project.removeMachine(machineview.getMachine().getName());
-        updateMachineList(null);
+        String name = machineview.getMachine().getName();
+        int ret = JOptionPane.showConfirmDialog(
+            frame,
+            "Are you sure you want to remove machine '" + name + "'?",
+            "Confirm machine removal",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if(ret == JOptionPane.YES_OPTION) {
+            project.removeMachine(name);
+            updateMachineList(null);
+        }
     }
     
     private void runProjectClicked() {
@@ -442,6 +453,7 @@ public class ProjectWindow implements RunPanelCloseHandler {
                     newStateClicked();
                 }
             });
+            button.setMnemonic(KeyEvent.VK_N);
             button.setEnabled(false);
             machine_buttons.add(button);
             machineeditor.add(button, c);

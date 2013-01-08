@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -234,7 +235,8 @@ public class StateEditor extends JPanel {
         c.weighty = 0.0;
         c.gridwidth = 1;
         
-        button = new JButton("New");
+        button = new JButton("New transition");
+        button.setMnemonic(KeyEvent.VK_T);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -301,8 +303,18 @@ public class StateEditor extends JPanel {
     }
     
     private void removeStateClicked() {
-        machineview.getMachine().removeState(state.getName());
-        machineview.stateModified();
+        String name = state.getName();
+        int ret = JOptionPane.showConfirmDialog(
+            frame,
+            "Are you sure you want to remove state '" + name + "'?",
+            "Confirm state removal",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if(ret == JOptionPane.YES_OPTION) {
+            machineview.getMachine().removeState(name);
+            machineview.stateModified();
+        }
     }
     
     private void newTransitionClicked() {

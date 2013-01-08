@@ -166,6 +166,7 @@ public class TransitionEditor extends JDialog {
         c.gridwidth = 3;
         c.gridy = 3;
         getContentPane().add(buttonpanel, c);
+        getRootPane().setDefaultButton(ok);
         
         pack();
     }

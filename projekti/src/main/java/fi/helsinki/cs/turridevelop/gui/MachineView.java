@@ -489,12 +489,14 @@ extends JPanel implements MouseListener, MouseMotionListener {
         
         // Render the text.
         Vec2 midpoint = Vec2.add(line[0], line[1]).mul(0.5);
-        g.fillOval((int)midpoint.x - 2, (int)midpoint.y - 2, 4, 4);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setColor(Color.BLUE);
+        g2.fillOval((int)midpoint.x - 2, (int)midpoint.y - 2, 4, 4);
         FontMetrics metrics = getFontMetrics(font);
         double textx = midpoint.x + 4.0;
         double textymid = 0.5 * (metrics.getAscent() - metrics.getDescent());
         double texty = midpoint.y + textymid;
-        g.drawString(text.toString(), (float)textx, (float)texty);
+        g2.drawString(text.toString(), (float)textx, (float)texty);
     }
     
     /**
