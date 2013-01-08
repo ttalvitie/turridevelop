@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -397,52 +398,6 @@ extends JPanel implements MouseListener, MouseMotionListener {
     }
     
     /**
-     * Gets the starting and ending points of line between ellipses.
-     * 
-     * @param ellipse1 The starting ellipse.
-     * @param ellipse2 The ending ellipse.
-     * @return 2-element array of the starting and ending points of the line.
-     */
-    private Vec2[] getLineBetweenEllipses(
-        Ellipse2D ellipse1,
-        Ellipse2D ellipse2
-    ) {
-        Vec2 center1 = new Vec2(ellipse1.getCenterX(), ellipse1.getCenterY());
-        Vec2 center2 = new Vec2(ellipse2.getCenterX(), ellipse2.getCenterY());
-        
-        Vec2 diff = Vec2.sub(center2, center1).normalized();
-        
-        // Get the sizes of the ellipses.
-        double w1 = ellipse1.getWidth();
-        double h1 = ellipse1.getHeight();
-        double w2 = ellipse2.getWidth();
-        double h2 = ellipse2.getHeight();
-        
-        // Write the ellipses in form a(x-x0)^2 + b(y-y0)^2 = 1 where (x0, y0)
-        // is the center.
-        double a1 = 4.0 / (w1 * w1);
-        double b1 = 4.0 / (h1 * h1);
-        double a2 = 4.0 / (w2 * w2);
-        double b2 = 4.0 / (h2 * h2);
-        
-        // Solve t from equation a(dx*t)^2 + b(dy*t)^2 = 1 where dx, dy are
-        // diff's components, i.e. get the intersection of an ellipse and a line
-        // going through its center. For start choose the positive solution and
-        // for end the negative solution because diff runs from center1 to
-        // center2.
-        double dx2 = diff.x * diff.x;
-        double dy2 = diff.y * diff.y;
-        double t1 = 1.0 / Math.sqrt(a1 * dx2 + b1 * dy2);
-        double t2 = -1.0 / Math.sqrt(a2 * dx2 + b2 * dy2);
-        
-        // Now the endpoints are the intersection points center + t * diff.
-        Vec2[] ret = new Vec2[2];
-        ret[0] = Vec2.add(center1, diff.mul(t1));
-        ret[1] = Vec2.add(center2, diff.mul(t2));
-        return ret;
-    }
-    
-    /**
      * Draws transitions between two states.
      * 
      * @param g The graphics context.
@@ -456,20 +411,22 @@ extends JPanel implements MouseListener, MouseMotionListener {
         State to,
         ArrayList<Transition> transitions
     ) {
-        Vec2[] line = getLineBetweenEllipses(
+        Vec2[] points = Util.getBezierBetweenEllipses(
             getStateEllipse(from),
             getStateEllipse(to)
         );
         
-        g.drawLine(
-            (int)line[0].x,
-            (int)line[0].y,
-            (int)line[1].x,
-            (int)line[1].y
+        Path2D.Double bezier = new Path2D.Double();
+        bezier.moveTo(points[0].x, points[0].y);
+        bezier.curveTo(
+            points[1].x, points[1].y,
+            points[2].x, points[2].y,
+            points[3].x, points[3].y
         );
+        g.draw(bezier);
         
         // Signify endpoint with a disc. TODO: create an arrow.
-        g.fillOval((int)line[1].x - 4, (int)line[1].y - 4, 8, 8);
+        g.fillOval((int)points[3].x - 4, (int)points[3].y - 4, 8, 8);
         
         // Create the text for the transitions.
         ArrayList<String> parts = new ArrayList<String>();
@@ -488,7 +445,10 @@ extends JPanel implements MouseListener, MouseMotionListener {
         }
         
         // Render the text.
-        Vec2 midpoint = Vec2.add(line[0], line[1]).mul(0.5);
+        Vec2 midpoint = Vec2.add(
+            Vec2.add(points[0], points[3]).mul(0.125),
+            Vec2.add(points[1], points[2]).mul(0.375)
+        );
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setColor(Color.BLUE);
         g2.fillOval((int)midpoint.x - 2, (int)midpoint.y - 2, 4, 4);
