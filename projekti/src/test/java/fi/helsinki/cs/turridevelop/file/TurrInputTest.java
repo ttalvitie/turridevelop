@@ -75,4 +75,13 @@ public class TurrInputTest {
         
         assertTrue(Util.projectsEqual(proj, cmpproj));
     }
+    
+    @Test(expected=MalformedFileException.class)
+    public void testUnknownDestinationThrows() throws JSONException, MalformedFileException {
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        json.put("mac", new JSONObject(
+            "{states: {start: {transitions: [{destination: \"asd\", inchar: \"a\", outchar: null, move: \"L\"}], submachine: null, accepting: false, x: 0, y: 0}}}"
+        ));
+        TurrInput.JSONToProject(json);
+    }
 }
