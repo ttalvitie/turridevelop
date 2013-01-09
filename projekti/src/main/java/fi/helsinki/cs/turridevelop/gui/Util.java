@@ -2,7 +2,6 @@ package fi.helsinki.cs.turridevelop.gui;
 
 import fi.helsinki.cs.turridevelop.logic.Transition;
 import fi.helsinki.cs.turridevelop.util.Vec2;
-import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 
