@@ -103,10 +103,6 @@ public class TurrOutput {
             }
             
             ret_json.put("states", states_json);
-            
-            // Add the submachines. TODO: implement.
-            ret_json.put("submachines", JSONObject.NULL);
-            
         } catch(JSONException e) {
             // All JSONExceptions are unexpected.
             throw new RuntimeException("JSON failure.", e);
