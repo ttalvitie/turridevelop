@@ -2,6 +2,7 @@ package fi.helsinki.cs.turridevelop.gui;
 
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
+import fi.helsinki.cs.turridevelop.logic.Project;
 import fi.helsinki.cs.turridevelop.logic.State;
 import fi.helsinki.cs.turridevelop.logic.Transition;
 import fi.helsinki.cs.turridevelop.util.Vec2;
@@ -32,6 +33,11 @@ import javax.swing.JPanel;
  */
 public class MachineView
 extends JPanel implements MouseListener, MouseMotionListener {
+    /**
+     * The project of the machine being edited.
+     */
+    private Project project;
+    
     /**
      * Machine being edited.
      */
@@ -94,11 +100,15 @@ extends JPanel implements MouseListener, MouseMotionListener {
     /**
      * Constructs a MachineView panel.
      * 
+     * @param project Project of the machine.
      * @param machine The machine to be edited in the view.
      * @param editpanel The panel to put the editing panel into.
      * @param frame The frame containing the view.
      */
-    public MachineView(Machine machine, JPanel editpanel, JFrame frame) {
+    public MachineView(
+        Project project, Machine machine, JPanel editpanel, JFrame frame
+    ) {
+        this.project = project;
         this.machine = machine;
         centerpos = new Vec2();
         this.editpanel = editpanel;
@@ -109,10 +119,22 @@ extends JPanel implements MouseListener, MouseMotionListener {
         font = new Font("SansSerif", Font.PLAIN, 14);
         drag_button = MouseEvent.NOBUTTON;
         
-        setActiveState(null);
+        setActiveState((State) null);
         
         addMouseListener(this);
         addMouseMotionListener(this);
+    }
+    
+    /**
+     * Set given state as active if possible.
+     * 
+     * @param statename The name of the state.
+     */
+    public void setActiveState(String statename) {
+        State state = machine.getState(statename);
+        if(state != null) {
+            setActiveState(state);
+        }
     }
     
     /**
@@ -136,7 +158,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
             active_state != null &&
             machine.getState(active_state.getName()) != active_state
         ) {
-            setActiveState(null);
+            setActiveState((State) null);
         }
         
         repaint();
@@ -273,6 +295,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         g.setStroke(
             new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
         );
+        g.setColor(new Color(0.3f, 0.3f, 0.3f));
         
         g.translate(
             getWidth() / 2 - (int)centerpos.x,
@@ -384,6 +407,31 @@ extends JPanel implements MouseListener, MouseMotionListener {
         Vec2 pos = state.getPosition();
         Ellipse2D.Double ellipse = getStateEllipse(state);
         
+        // Draw submachine.
+        String submachine = state.getSubmachine();
+        if(submachine != null) {
+            Vec2 center = new Vec2(
+                ellipse.getCenterX(), ellipse.getMaxY() + 30
+            );
+            g.drawLine((int)pos.x, (int)pos.y, (int)center.x, (int)center.y);
+            Vec2 size = Vec2.add(getTextSize(submachine), new Vec2(4.0, 3.0));
+            Vec2 min = Vec2.sub(center, size.mul(0.5));
+            
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(Color.WHITE);
+            g2.fillRect((int)min.x, (int)min.y, (int)size.x, (int)size.y);
+            
+            g.drawRect((int)min.x, (int)min.y, (int)size.x, (int)size.y);
+            
+            // If the submachine is missing, show in red.
+            if(project.getMachine(submachine) == null) {
+                g2.setColor(Color.RED);
+            } else {
+                g2.setColor(Color.BLACK);
+            }
+            drawCenteredText(g2, submachine, center);
+        }
+        
         // Hilight active state.
         Graphics2D g2 = (Graphics2D) g.create();
         if(state == active_state) {
@@ -403,9 +451,10 @@ extends JPanel implements MouseListener, MouseMotionListener {
             );
             g.draw(ellipse2);
         }
-        
+       
         g.draw(ellipse);
-        drawCenteredText(g, state.getName(), pos);
+        g2.setColor(Color.BLACK);
+        drawCenteredText(g2, state.getName(), pos);
     }
     
     /**
@@ -531,10 +580,10 @@ extends JPanel implements MouseListener, MouseMotionListener {
             Vec2.add(points[1], points[2]).mul(0.375)
         );
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setColor(Color.BLUE);
+        g2.setColor(Color.BLACK);
         g2.fillOval((int)midpoint.x - 2, (int)midpoint.y - 2, 4, 4);
         FontMetrics metrics = getFontMetrics(font);
-        double textx = midpoint.x + 4.0;
+        double textx = midpoint.x + 7.0;
         double textymid = 0.5 * (metrics.getAscent() - metrics.getDescent());
         double texty = midpoint.y + textymid;
         g2.drawString(text.toString(), (float)textx, (float)texty);

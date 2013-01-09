@@ -51,7 +51,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * Window where a single project is modified.
  */
-public class ProjectWindow implements RunPanelCloseHandler {
+public class ProjectWindow implements RunPanelEventHandler {
     /**
      * The frame of the window.
      */
@@ -191,6 +191,16 @@ public class ProjectWindow implements RunPanelCloseHandler {
         
         frame.pack();
         frame.setVisible(true);
+    }
+    
+    @Override
+    public void runPanelShowState(String machine, String state) {
+        if(project != null) {
+            updateMachineList(machine);
+            if(machineview != null) {
+                machineview.setActiveState(state);
+            }
+        }
     }
     
     @Override
@@ -370,7 +380,7 @@ public class ProjectWindow implements RunPanelCloseHandler {
         editpanel.removeAll();
         machineview = null;
         if(machine != null) {
-            machineview = new MachineView(machine, editpanel, frame);
+            machineview = new MachineView(project, machine, editpanel, frame);
             machinepanel.add(machineview);
         }
         

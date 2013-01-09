@@ -43,7 +43,7 @@ public class RunPanel extends JPanel {
     /**
      * Handler to call when the panel should be closed.
      */
-    private RunPanelCloseHandler close_handler;
+    private RunPanelEventHandler eventhandler;
     
     /**
      * Combo box for choosing the machine to run.
@@ -89,9 +89,9 @@ public class RunPanel extends JPanel {
      * Constructs a run panel for a project.
      * 
      * @param project The project to run.
-     * @param close_handler Handler to call when the panel should be closed.
+     * @param eventhandler Handler to call on events.
      */
-    public RunPanel(Project project, RunPanelCloseHandler close_handler) {
+    public RunPanel(Project project, RunPanelEventHandler eventhandler) {
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -99,7 +99,7 @@ public class RunPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder("Run project"));
         
         this.project = project;
-        this.close_handler = close_handler;
+        this.eventhandler = eventhandler;
         tape = new Tape();
         simulation_buttons = new ArrayList<AbstractButton>();
         
@@ -245,7 +245,7 @@ public class RunPanel extends JPanel {
     }
     
     private void closeClicked() {
-        close_handler.runPanelClosed(this);
+        eventhandler.runPanelClosed(this);
     }
     
     private void startClicked() {
@@ -268,6 +268,10 @@ public class RunPanel extends JPanel {
         updateButtons();
         updateStatus();
         updateTapeView();
+        eventhandler.runPanelShowState(
+            simulation.getMachine().getName(),
+            simulation.getState().getName()
+        );
     }
     
     private void stepClicked() {
@@ -306,6 +310,12 @@ public class RunPanel extends JPanel {
         }
         updateStatus();
         updateTapeView();
+        if(simulation != null) {
+            eventhandler.runPanelShowState(
+                simulation.getMachine().getName(),
+                simulation.getState().getName()
+            );
+        }
     }
     
     private void runToggled() {
@@ -317,7 +327,8 @@ public class RunPanel extends JPanel {
                     if(
                         run_button.isSelected() &&
                         simulation != null &&
-                        simulation.getStatus() == SimulationStatus.RUNNING
+                        simulation.getStatus() == SimulationStatus.RUNNING &&
+                        isDisplayable()
                     ) {
                         step(10000); 
                         SwingUtilities.invokeLater(this);
