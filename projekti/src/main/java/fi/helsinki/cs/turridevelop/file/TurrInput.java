@@ -172,7 +172,11 @@ public class TurrInput {
             for(int i = 0; i < transitions_json.length(); i++) {
                 JSONObject transition_json = transitions_json.getJSONObject(i);
                 
-                String destination = transition_json.getString("destination");
+                String destname = transition_json.getString("destination");
+                State destination = machine.getState(destname);
+                if(destination == null) {
+                    throw new MalformedFileException();
+                }
                 String inchar = transition_json.getString("inchar");
                 
                 Character outchar = null;
@@ -198,7 +202,7 @@ public class TurrInput {
                 }
                 
                 state.addTransition(new Transition(
-                    machine.getState(destination), inchar, outchar, move
+                    destination, inchar, outchar, move
                 ));
             }
         }
