@@ -86,7 +86,9 @@ public class MachineTest {
         State a = mac.addState("a");
         State b = mac.addState("b");
         a.addTransition(new Transition(b, "x", 'y', 0));
+        a.addTransition(new Transition(a, "b", 'z', 0));
         mac.removeState("b");
-        assertEquals(0, a.getTransitions().size());
+        assertEquals(1, a.getTransitions().size());
+        assertEquals(a, a.getTransitions().iterator().next().getDestination());
     }
 }

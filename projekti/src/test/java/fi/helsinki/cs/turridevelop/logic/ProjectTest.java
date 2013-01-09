@@ -70,4 +70,15 @@ public class ProjectTest {
         assertEquals(mbsd, proj.getMachine("bsd"));
         assertEquals("bsd", mbsd.getName());
     }
+    
+    @Test
+    public void testRemoveMachineWorks() throws NameInUseException {
+        proj.addMachine("a");
+        proj.addMachine("b");
+        
+        proj.removeMachine("a");
+        
+        assertEquals(1, proj.getMachineNames().size());
+        assertEquals("b", proj.getMachineNames().iterator().next());
+    }
 }

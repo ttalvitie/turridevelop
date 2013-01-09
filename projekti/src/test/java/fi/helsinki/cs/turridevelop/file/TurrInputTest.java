@@ -102,4 +102,13 @@ public class TurrInputTest {
         ));
         TurrInput.JSONToProject(json);
     }
+    
+    @Test(expected=MalformedFileException.class)
+    public void testMissingSubmachineThrows() throws JSONException, MalformedFileException {
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        json.put("mac", new JSONObject(
+            "{states: {start: {transitions: [], accepting: true, x: 0, y: 0}}}"
+        ));
+        TurrInput.JSONToProject(json);
+    }
 }
