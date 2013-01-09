@@ -102,14 +102,28 @@ public class ProjectWindow implements RunPanelEventHandler {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(300, 200));
         
-        // Add menus.
+        createMenus();
+        
+        changeProject(null);
+        
+        frame.getContentPane().setLayout(new BoxLayout(
+            frame.getContentPane(), BoxLayout.X_AXIS
+        ));
+        
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
+    /**
+     * Create the menus of the project window.
+     */
+    private void createMenus() {
         JMenuBar menubar = new JMenuBar();
         JMenu menu;
         JMenuItem item;
         project_buttons = new ArrayList<AbstractButton>();
         machine_buttons = new ArrayList<AbstractButton>();
         
-        // Project-menu:
         menu = new JMenu("Project");
         
         item = new JMenuItem("New project");
@@ -177,15 +191,6 @@ public class ProjectWindow implements RunPanelEventHandler {
         menubar.add(menu);
         
         frame.setJMenuBar(menubar);
-        
-        changeProject(null);
-        
-        frame.getContentPane().setLayout(new BoxLayout(
-            frame.getContentPane(), BoxLayout.X_AXIS
-        ));
-        
-        frame.pack();
-        frame.setVisible(true);
     }
     
     @Override
@@ -391,7 +396,7 @@ public class ProjectWindow implements RunPanelEventHandler {
     }
     
     /**
-     * Set the project of the class to project, update GUI accordingly.
+     * Sets the project of the class, update GUI accordingly.
      * 
      * @param newproject The new project.
      */

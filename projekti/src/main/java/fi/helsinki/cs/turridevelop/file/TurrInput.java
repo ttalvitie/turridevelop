@@ -146,18 +146,7 @@ public class TurrInput {
             State state = machine.addState(statename);
             JSONObject state_json = states_json.getJSONObject(statename);
             
-            if(state_json.get("accepting").equals(true)) {
-                state.setAccepting(true);
-            }
-            
-            Object submachine_json = state_json.get("submachine");
-            if(submachine_json != JSONObject.NULL) {
-                state.setSubmachine((String) submachine_json);
-            }
-            
-            double x = state_json.getDouble("x");
-            double y = state_json.getDouble("y");
-            state.setPosition(new Vec2(x, y));
+            readState(state, state_json);
         }
         
         // Then add transitions, because now all destination states should
@@ -167,44 +156,87 @@ public class TurrInput {
             String statename = (String) iter.next();
             State state = machine.getState(statename);
             JSONObject state_json = states_json.getJSONObject(statename);
-            JSONArray transitions_json = state_json.getJSONArray("transitions");
             
-            for(int i = 0; i < transitions_json.length(); i++) {
-                JSONObject transition_json = transitions_json.getJSONObject(i);
-                
-                String destname = transition_json.getString("destination");
-                State destination = machine.getState(destname);
-                if(destination == null) {
-                    throw new MalformedFileException();
-                }
-                String inchar = transition_json.getString("inchar");
-                
-                Character outchar = null;
-                Object outchar_obj = transition_json.get("outchar");
-                if(outchar_obj instanceof String) {
-                    String outchar_str = (String) outchar_obj;
-                    if(outchar_str.length() != 1) {
-                        throw new MalformedFileException();
-                    }
-                    outchar = outchar_str.charAt(0);
-                }
-                
-                int move;
-                String move_str = transition_json.getString("move");
-                if(move_str.equals("L")) {
-                    move = -1;
-                } else if(move_str.equals("R")) {
-                    move = 1;
-                } else if(move_str.equals("S")) {
-                    move = 0;
-                } else {
-                    throw new MalformedFileException();
-                }
-                
-                state.addTransition(new Transition(
-                    destination, inchar, outchar, move
-                ));
+            readTransitions(machine, state, state_json);
+        }
+    }
+    
+    /**
+     * Reads all other data except transitions from a JSON object into a state.
+     * 
+     * @param state The state to read the data into.
+     * @param json The JSON object describing the state.
+     * @throws JSONException if some fields are missing in the JSON object.
+     */
+    private static void readState(
+        State state, JSONObject json
+    ) throws JSONException {
+        if(json.get("accepting").equals(true)) {
+            state.setAccepting(true);
+        }
+        
+        Object submachine_json = json.get("submachine");
+        if(submachine_json != JSONObject.NULL) {
+            state.setSubmachine((String) submachine_json);
+        }
+        
+        double x = json.getDouble("x");
+        double y = json.getDouble("y");
+        state.setPosition(new Vec2(x, y));
+    }
+    
+    /**
+     * Reads transitions from a JSON object into a state.
+     * 
+     * @param machine The machine containing the state.
+     * @param state The state to read the data into.
+     * @param json The JSON object describing the state.
+     * @throws JSONException if some fields are missing in the JSON object.
+     * @throws MalformedFileException in case of invalid field contents in the
+     * JSON object.
+     * @throws NameInUseException if some transitions have the same input
+     * character.
+     */
+    private static void readTransitions(
+        Machine machine, State state, JSONObject json
+    ) throws JSONException, MalformedFileException, NameInUseException {
+        JSONArray transitions_json = json.getJSONArray("transitions");
+            
+        for(int i = 0; i < transitions_json.length(); i++) {
+            JSONObject transition_json = transitions_json.getJSONObject(i);
+            
+            String destname = transition_json.getString("destination");
+            State destination = machine.getState(destname);
+            if(destination == null) {
+                throw new MalformedFileException();
             }
+            String inchar = transition_json.getString("inchar");
+            
+            Character outchar = null;
+            Object outchar_obj = transition_json.get("outchar");
+            if(outchar_obj instanceof String) {
+                String outchar_str = (String) outchar_obj;
+                if(outchar_str.length() != 1) {
+                    throw new MalformedFileException();
+                }
+                outchar = outchar_str.charAt(0);
+            }
+            
+            int move;
+            String move_str = transition_json.getString("move");
+            if(move_str.equals("L")) {
+                move = -1;
+            } else if(move_str.equals("R")) {
+                move = 1;
+            } else if(move_str.equals("S")) {
+                move = 0;
+            } else {
+                throw new MalformedFileException();
+            }
+            
+            state.addTransition(new Transition(
+                destination, inchar, outchar, move
+            ));
         }
     }
 }

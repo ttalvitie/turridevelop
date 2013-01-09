@@ -426,7 +426,7 @@ public class StateEditor extends JPanel {
     }
     
     /**
-     * Update transition list to match the current transitions of the state.
+     * Updates transition list to match the current transitions of the state.
      */
     private void updateTransitionList() {
         transitionlist_objs = new ArrayList<Transition>(state.getTransitions());

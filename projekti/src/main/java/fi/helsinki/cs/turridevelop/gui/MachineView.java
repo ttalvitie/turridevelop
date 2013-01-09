@@ -180,13 +180,14 @@ extends JPanel implements MouseListener, MouseMotionListener {
      */
     public void addState() {
         int statenumber = 1;
-        while(machine.getState("State #" + statenumber) != null) {
+        while(machine.getState("" + statenumber) != null) {
             statenumber++;
         }
         
         try {
-            State state = machine.addState("State #" + statenumber);
+            State state = machine.addState("" + statenumber);
             state.setPosition(centerpos);
+            setActiveState(state);
         } catch(NameInUseException e) {
             throw new RuntimeException();
         }
@@ -324,9 +325,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
             }
         }
         
-        /**
-         * Draw the arrows showing the states outside the view.
-         */
+        // Draw the arrows showing the states outside the view.
         for(String name : machine.getStateNames()) {
             State state = machine.getState(name);
             drawStateArrow(g, state);
@@ -363,6 +362,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
         Vec2 halfsize = new Vec2(getWidth(), getHeight()).mul(0.5);
         return Vec2.add(Vec2.sub(pos, centerpos), halfsize);
     }
+    
     /**
      * Gets the ellipse that should be drawn around the state name.
      * 
@@ -395,7 +395,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
     }
     
     /**
-     * Draw a state.
+     * Draws a state.
      * 
      * @param g The graphics context to use.
      * @param state The state to draw.
@@ -455,7 +455,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
     }
     
     /**
-     * If the state is outside visible area, draw an arrow pointing towards it.
+     * If the state is outside visible area, draws an arrow pointing towards it.
      * 
      * @param g The graphics context to use.
      * @param state The state to draw.
@@ -477,7 +477,7 @@ extends JPanel implements MouseListener, MouseMotionListener {
                 Math.min(Math.max(pos.x, min.x), max.x),
                 Math.min(Math.max(pos.y, min.y), max.y)
             );
-            Vec2 arrowdir = new Vec2(1, 0);
+            Vec2 arrowdir;
             if(diagpos.x < 0) {
                 if(diagpos.y < 0) {
                     arrowdir = new Vec2(-1.0, -1.0);

@@ -193,7 +193,7 @@ public class TransitionEditor extends JDialog {
     }
     
     /**
-     * Get the default values of the fields from a transition.
+     * Gets the default values of the fields from a transition.
      * 
      * @param transition The transition from which to get the default values.
      */
@@ -218,7 +218,7 @@ public class TransitionEditor extends JDialog {
     }
     
     /**
-     * Construct a transition from the settings specified in the editor.
+     * Constructs a transition from the settings specified in the editor.
      * 
      * @param destination The destination state.
      * @return The transition or null if user didn't close the window with OK

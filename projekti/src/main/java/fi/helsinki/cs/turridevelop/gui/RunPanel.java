@@ -80,7 +80,7 @@ public class RunPanel extends JPanel {
     private JToggleButton run_button;
     
     /**
-     * Has the user been warned for this run that the tape is very long.
+     * Has the user been warned for this run that the tape is very long?
      */
     private boolean run_warned;
     
@@ -168,13 +168,28 @@ public class RunPanel extends JPanel {
         c.gridy++;
         c.gridx = 0;
         
+        
+        c.gridwidth = 7;
+        add(createTapePanel(), c);
+        c.gridwidth = 1;
+        
+        machinesChanged();
+        updateButtons();
+        updateStatus();
+        updateTapeView();
+    }
+    
+    /**
+     * Creates and returns a panel for showing the state of the tape.
+     */
+    private JPanel createTapePanel() {
         JPanel tapepanel = new JPanel(new GridBagLayout());
         tapepanel.setBorder(BorderFactory.createTitledBorder("Tape"));
-        GridBagConstraints c2 = new GridBagConstraints();
-        c2.fill = GridBagConstraints.HORIZONTAL;
-        c2.weighty = 1.0;
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weighty = 1.0;
         
-        button = new JButton("Clear");
+        JButton button = new JButton("Clear");
         button.setMnemonic(KeyEvent.VK_C);
         button.addActionListener(new ActionListener() {
             @Override
@@ -182,9 +197,9 @@ public class RunPanel extends JPanel {
                 clearTapeClicked();
             }
         });
-        c2.gridx = 0;
-        c2.gridy = 0;
-        tapepanel.add(button, c2);
+        c.gridx = 0;
+        c.gridy = 0;
+        tapepanel.add(button, c);
         
         button = new JButton("Edit");
         button.addActionListener(new ActionListener() {
@@ -193,31 +208,24 @@ public class RunPanel extends JPanel {
                 editTapeClicked();
             }
         });
-        c2.gridy = 1;
-        tapepanel.add(button, c2);
+        c.gridy = 1;
+        tapepanel.add(button, c);
         
         tape_textarea = new JTextArea(2, 30);
         tape_textarea.setEditable(false);
         tape_textarea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         
-        c2.gridx = 1;
-        c2.gridy = 0;
-        c2.gridheight = 2;
-        c2.weightx = 1.0;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridheight = 2;
+        c.weightx = 1.0;
         tapepanel.add(new JScrollPane(
             tape_textarea,
             JScrollPane.VERTICAL_SCROLLBAR_NEVER,
             JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-        ), c2);
+        ), c);
         
-        c.gridwidth = 7;
-        add(tapepanel, c);
-        c.gridwidth = 1;
-        
-        machinesChanged();
-        updateButtons();
-        updateStatus();
-        updateTapeView();
+        return tapepanel;
     }
     
     /**
@@ -277,6 +285,11 @@ public class RunPanel extends JPanel {
         step(1);
     }
     
+    /**
+     * Steps the simulation given number of times.
+     * 
+     * @param times How many times to step.
+     */
     private void step(int times) {
         if(simulation != null) {
             if(
@@ -357,7 +370,7 @@ public class RunPanel extends JPanel {
     }
     
     /**
-     * Enable/disable buttons based on whether the simulation is active.
+     * Enables/disables buttons based on whether the simulation is active.
      */
     private void updateButtons() {
         for(AbstractButton button : simulation_buttons) {
@@ -366,7 +379,7 @@ public class RunPanel extends JPanel {
     }
     
     /**
-     * Update the status button to reflect the status of the simulation.
+     * Updates the status button to reflect the status of the simulation.
      */
     private void updateStatus() {
         if(simulation == null) {
@@ -398,7 +411,7 @@ public class RunPanel extends JPanel {
     }
     
     /**
-     * Update the tape view to show the current status of the view.
+     * Updates the tape view to show the current status of the view.
      */
     private void updateTapeView() {
         StringBuilder text = new StringBuilder();
