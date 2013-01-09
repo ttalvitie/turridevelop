@@ -84,4 +84,22 @@ public class TurrInputTest {
         ));
         TurrInput.JSONToProject(json);
     }
+    
+    @Test(expected=MalformedFileException.class)
+    public void testInvalidMoveThrows() throws JSONException, MalformedFileException {
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        json.put("mac", new JSONObject(
+            "{states: {start: {transitions: [{destination: \"start\", inchar: \"a\", outchar: null, move: \"G\"}], submachine: null, accepting: false, x: 0, y: 0}}}"
+        ));
+        TurrInput.JSONToProject(json);
+    }
+    
+    @Test(expected=MalformedFileException.class)
+    public void testInvalidOutcharThrows() throws JSONException, MalformedFileException {
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        json.put("mac", new JSONObject(
+            "{states: {start: {transitions: [{destination: \"start\", inchar: \"a\", outchar: \"abba\", move: \"S\"}], submachine: null, accepting: false, x: 0, y: 0}}}"
+        ));
+        TurrInput.JSONToProject(json);
+    }
 }
