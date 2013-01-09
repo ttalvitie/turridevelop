@@ -1,5 +1,6 @@
 package fi.helsinki.cs.turridevelop.file;
 
+import fi.helsinki.cs.turridevelop.exceptions.FilesystemException;
 import fi.helsinki.cs.turridevelop.exceptions.MalformedFileException;
 import fi.helsinki.cs.turridevelop.exceptions.NameInUseException;
 import fi.helsinki.cs.turridevelop.logic.Machine;
@@ -11,8 +12,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,30 +25,30 @@ import org.json.JSONObject;
  */
 public class TurrInput {
     /**
-     * Reads a project directory.
+     * Gets the machine names of all the Turr files in a directory. The file
+     * names are the machine names with ".turr" in the end.
      * 
-     * @param dir The project directory to read.
-     * @return The project read from all .turr-machine files from the directory.
-     * @throws MalformedFileException if the project directory can not be read
-     * from.
+     * @param dir The directory to read.
+     * @return Set of the machine names.
+     * @throws FilesystemExcption if the directory cannot be opened.
      */
-    public static Project readProjectDirectory(
+    public static Set<String> getMachineNamesInDirectory(
         File dir
-    ) throws MalformedFileException {
-        // Get the files in the directory.
+    ) throws FilesystemException {
+        // Get the list of files in the directory.
         File[] files = dir.listFiles();
         
         if(files == null) {
-            throw new MalformedFileException(
+            throw new FilesystemException(
                 "Could not open project directory '" + dir + "'"
             );
         }
         
-        // Read the JSON machine files.
-        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        HashSet<String> names = new HashSet<String>();
+        
+        String extension = ".turr";
         for(File file : files) {
             String filename = file.getName();
-            String extension = ".turr";
             int extension_start = filename.length() - extension.length();
             if(
                 extension_start < 0 ||
@@ -54,13 +57,31 @@ public class TurrInput {
                 break;
             }
             String name = filename.substring(0, extension_start);
-            
-            if(json.containsKey(name)) {
-                throw new MalformedFileException(
-                    "Multiple machines with name '" +
-                    name + "' in the directory."
-                );
-            }
+            names.add(name);
+        }
+        
+        return names;
+    }
+    
+    /**
+     * Reads a project directory.
+     * 
+     * @param dir The project directory to read.
+     * @return The project read from all .turr-machine files from the directory.
+     * @throws FilesystemException if the project directory or the machine files
+     * cannot be read.
+     * @throws MalformedFileException if some machine files are malformed.
+     */
+    public static Project readProjectDirectory(
+        File dir
+    ) throws MalformedFileException, FilesystemException {
+        // Get the list of machines.
+        Set<String> names = getMachineNamesInDirectory(dir);
+        
+        HashMap<String, JSONObject> json = new HashMap<String, JSONObject>();
+        for(String name : names) {
+            // Read the source file.
+            File file = new File(dir, name + ".turr");
             
             StringBuilder source = new StringBuilder();
             try {
@@ -73,8 +94,8 @@ public class TurrInput {
                     source.append(buffer, 0, read);
                 }
             } catch(Exception e) {
-                throw new MalformedFileException(
-                    "Could not open machine file '" + file + "'."
+                throw new FilesystemException(
+                    "Could not read machine file '" + file + "'."
                 );
             }
             

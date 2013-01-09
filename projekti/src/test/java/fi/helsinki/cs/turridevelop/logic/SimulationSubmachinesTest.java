@@ -179,4 +179,12 @@ public class SimulationSubmachinesTest {
         Simulation sim = new Simulation(proj, "mac", new Tape("aasd"));
         sim.run();
     }
+    
+    @Test(expected=SimulationException.class)
+    public void testUnknownSubmachineThrows() throws SimulationException {
+        x.setSubmachine("baa");
+        
+        Simulation sim = new Simulation(proj, "mac", new Tape("aasd"));
+        sim.run();
+    }
 }

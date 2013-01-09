@@ -223,12 +223,18 @@ public class ProjectWindow implements RunPanelEventHandler {
         
         // A directory was chosen, try to open it.
         File dir = chooser.getSelectedFile();
+        Exception error = null;
         try {
             changeProject(TurrInput.readProjectDirectory(dir));
         } catch(MalformedFileException e) {
+            error = e;
+        } catch(FilesystemException e) {
+            error = e;
+        }
+        if(error != null) {
             JOptionPane.showMessageDialog(
                 frame,
-                "Opening project '" + dir + "' failed:\n" + e.getMessage(),
+                "Opening project '" + dir + "' failed:\n" + error.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
             );
@@ -246,7 +252,7 @@ public class ProjectWindow implements RunPanelEventHandler {
             return;
         }
         
-        // A directory was chosen, create it if it doesn't exist already.
+        // Check that the directory exists.
         File dir = chooser.getSelectedFile();
         if(!dir.isDirectory()) {
             JOptionPane.showMessageDialog(
@@ -259,6 +265,13 @@ public class ProjectWindow implements RunPanelEventHandler {
             return;
         }
         
+        // Warn the user if the directory contains extra machine files.
+        try {
+            if(!checkExtraFiles(dir)) {
+                return;
+            }
+        } catch(FilesystemException e) { }
+        
         // Try to save.
         try {
             TurrOutput.writeProject(project, dir);
@@ -270,6 +283,48 @@ public class ProjectWindow implements RunPanelEventHandler {
                 JOptionPane.ERROR_MESSAGE
             );
         }
+    }
+    
+    /**
+     * If there are machines in the directory that are not in the project, show
+     * the user a warning.
+     * 
+     * @param dir The directory being saved to.
+     * @return true iff there were no extra files or the user chose to continue.
+     * @throws FilesystemException if the directory could not be read.
+     */
+    private boolean checkExtraFiles(File dir) throws FilesystemException {
+        Set<String> existing_names =
+            TurrInput.getMachineNamesInDirectory(dir);
+        ArrayList<String> extra_machines = new ArrayList<String>();
+        for(String name : existing_names) {
+            if(project.getMachine(name) == null) {
+                extra_machines.add(name);
+            }
+        }
+        
+        if(extra_machines.isEmpty()) {
+            return true;
+        }
+     
+        StringBuilder extra_names = new StringBuilder();
+        extra_names.append(extra_machines.get(0));
+        for(int i = 1; i < extra_machines.size(); i++) {
+            extra_names.append(", ");
+            extra_names.append(extra_machines.get(i));
+        }
+        
+        int choice = JOptionPane.showConfirmDialog(
+            frame,
+            "The directory contains the following machines that are not in " +
+            "the project being saved:\n" + extra_names + ".\n" +
+            "Their removal must be done manually. Do you still want " +
+            "to save the project?",
+            "Warning",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+        return choice == JOptionPane.YES_OPTION;
     }
     
     private void quitClicked() {
