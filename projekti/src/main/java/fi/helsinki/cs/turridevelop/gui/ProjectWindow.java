@@ -98,7 +98,7 @@ public class ProjectWindow implements RunPanelEventHandler {
     private JSplitPane split;
     
     public ProjectWindow() {
-        frame = new JFrame();
+        frame = new JFrame("turrIDEvelop");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(300, 200));
         
