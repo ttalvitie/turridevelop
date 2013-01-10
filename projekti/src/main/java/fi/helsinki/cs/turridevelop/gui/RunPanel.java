@@ -186,7 +186,7 @@ public class RunPanel extends JPanel {
         JPanel tapepanel = new JPanel(new GridBagLayout());
         tapepanel.setBorder(BorderFactory.createTitledBorder("Tape"));
         GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.BOTH;
         c.weighty = 1.0;
         
         JButton button = new JButton("Clear");
