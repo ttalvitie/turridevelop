@@ -1,0 +1,67 @@
+\documentclass[a4paper, 11pt, finnish]{article}
+\usepackage{graphicx}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[finnish]{babel}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\author{Topi Talvitie}
+\title{turrIDEvelop: Käyttöohje}
+
+\begin{document}
+\maketitle
+
+\section{Projektit}
+turrIDEvelop on kehitysympäristö Turingin koneiden luomiseen. Kehitysympäristö
+käsittelee projekteja, jotka tallennetaan hakemistoina jotka sisältävät
+.turr-päätteellä nimettäviä konetiedostoja (päätteen kirjaimet pienellä).
+Muut tiedostot projektikansiossa kehitysympäristö jättää huomiotta.
+
+Projektin avaaminen onnistuu valitsemalla Project-valikosta Open project ja
+valitsemalla projektikansion. Nykyinen muokattava projekti tallennetaan
+valitsemalla Project-valikosta Save project ja valitsemalla projektikansio.
+Jos projektikansiota ei ole olemassa, on se luotava erikseen.
+
+\section{Koneet}
+Projektin koneita (joita vastaavat projektihakemiston .turr-tiedostot) voi
+muokata ja valita vasemman yläkulman Machines-listasta. Kun kone valitaan,
+ikkunan oikealle puolelle aukeaa koneen diagrammiesitys.
+Diagrammiesityksessä voidaan siirtää näytettävää kohtaa painamalla oikea
+hiirinappi alas ja liikuttamalla hiirtä. Tilojen sijaintia voi myös muuttaa
+raahaamalla niitä.
+
+\section{Tilat}
+Kun diagrammiesityksestä klikataan tilaa, aukeaa tilan muokkauspaneeli ikkunan
+vasempaan alakulmaan. Tässä paneelissa voi vaihtaa koneen nimeä, alikonetta ja
+muokata tilasta lähteviä siirtymiä, tai muuttaa tilan hyväksyväksi. Uutta
+siirtymää luotaessa on valittava siirtymän kohdetila koneen diagrammiesityksestä.
+
+\section{Alikoneet}
+turrIDEvelop tukee Turingin koneeseen tavallisesti kuulumatonta ominaisuutta:
+voit luoda tilaan viittauksen projektin toiseen koneeseen. Tällöin kun koneen
+simulaatio saapuu tilaan, käy simulaatio ajamassa viitatun alikoneen
+'start'-tilasta hyväksyvään tilaan asti ja sitten palaa jatkamaan suoritusta
+viittaavasta tilasta. Alikone määritellään tilan muokkauspaneelissa, ja se
+piirretään kaavioon tilan alapuolelle suorakulmioon.
+
+\section{Simulointi}
+Projektin kone voidaan ajaa valitsemalla Project-valikosta Run tai painamalla
+Ctrl+R. Tällöin diagrammiesityksen alareunaan aukeaa paneeli, jossa voi
+säädellä koneen ajoa. Run-paneelin alareunassa näkyy simulaatiossa käytettävä
+nauha, jota voi editoida. Kone käynnistetään valitsemalla alasvetovalikosta
+ajettava kone ja painamalla Start. Ajo aloitetaan aina 'start'-nimisestä
+tilasta. Konetta voidaan ajaa joko yksi siirtymä
+kerrallaan painamalla Step tai jatkuvasti painamalla Run pohjaan. Oikeassa
+reunassa näytetään simulaation nykyinen tilanne. Simulointi suorittaa myös
+alikoneet ja saavuttaessa alikoneeseen viittaavaan tilaan simulointi hyppää
+suoraan alikoneeseen.
+
+\section{Pikanäppäimet}
+Tärkeimpiin käyttöliittymän nappeihin liittyy pikanäppäin, esimerkiksi Alt+N
+luo nykyiseen koneeseen uuden tilan ja Alt+T luo nykyiseen tilaan uuden
+siirtymän. Pikanäppäimenä käytettävä kirjain on napissa alleviivattuna.
+
+\end{document}
