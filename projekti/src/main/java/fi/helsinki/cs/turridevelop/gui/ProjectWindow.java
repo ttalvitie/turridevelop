@@ -248,7 +248,7 @@ public class ProjectWindow implements RunPanelEventHandler {
     private void saveProjectAsClicked() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if(chooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) {
+        if(chooser.showSaveDialog(frame) != JFileChooser.APPROVE_OPTION) {
             return;
         }
         
