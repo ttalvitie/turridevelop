@@ -196,7 +196,12 @@ public class ProjectWindow implements RunPanelEventHandler {
     @Override
     public void runPanelShowState(String machine, String state) {
         if(project != null) {
-            updateMachineList(machine);
+            if(
+                machineview == null ||
+                !machineview.getMachine().getName().equals(machine)
+            ) {
+                updateMachineList(machine);
+            }
             if(machineview != null) {
                 machineview.setActiveState(state);
             }
